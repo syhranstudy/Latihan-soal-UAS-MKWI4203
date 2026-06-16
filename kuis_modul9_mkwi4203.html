@@ -1,155 +1,658 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis MKWI4203 - Modul 9</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
-        .quiz-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #2c3e50; }
-        .question { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
-        .options { list-style-type: none; padding: 0; }
-        .options li { margin-bottom: 10px; }
-        .options button { width: 100%; padding: 15px; text-align: left; background: #e9ecef; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 1em; transition: 0.3s; }
-        .options button:hover { background: #dce1e6; }
-        .options button:disabled { cursor: not-allowed; }
-        .btn-correct { background: #d4edda !important; border-color: #c3e6cb !important; color: #155724; }
-        .btn-wrong { background: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24; }
-        .feedback { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
-        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .next-btn { display: none; width: 100%; padding: 15px; margin-top: 20px; background: #e83e8c; color: white; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
-        .next-btn:hover { background: #c23375; }
-        .score-container { text-align: center; display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Modul 9 — Kewirausahaan di Era Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14172B;
+    --surface: #1C2046;
+    --surface-2: #262B56;
+    --accent-amber: #F2A93B;
+    --accent-teal: #4FD1C5;
+    --accent-coral: #FF6B6B;
+    --text-primary: #F5F3EE;
+    --text-muted: #9CA3C4;
+    --border: rgba(245,243,238,0.10);
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: radial-gradient(circle at 20% -10%, #232958 0%, var(--bg) 55%);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding: 32px 16px 64px;
+  }
+
+  .app{ width:100%; max-width: 640px; }
+
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-amber);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+
+  h1{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 5vw, 28px);
+    font-weight: 700;
+    margin: 0 0 18px;
+    line-height: 1.25;
+  }
+
+  .progress-track{
+    display:flex;
+    align-items:flex-end;
+    gap: 3px;
+    height: 36px;
+    margin-bottom: 8px;
+  }
+  .progress-bar{
+    flex:1;
+    background: var(--border);
+    border-radius: 3px 3px 0 0;
+    transition: background .35s ease, transform .35s ease;
+    transform-origin: bottom;
+  }
+  .progress-bar.current{ background: var(--accent-amber); }
+  .progress-bar.correct{ background: var(--accent-teal); }
+  .progress-bar.wrong{ background: var(--accent-coral); }
+
+  .progress-label{
+    display:flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+  .progress-label span:last-child{ font-weight:600; color: var(--text-primary); }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+  }
+
+  .q-meta{
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .q-text{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 22px;
+  }
+
+  .options{ display:flex; flex-direction:column; gap: 10px; }
+
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap: 12px;
+    text-align:left;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, transform .15s ease;
+  }
+  .option:hover:not(.locked){ border-color: var(--accent-amber); transform: translateY(-1px); }
+  .option:focus-visible{ outline: 2px solid var(--accent-amber); outline-offset: 2px; }
+
+  .option .tag{
+    flex-shrink:0;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: rgba(245,243,238,0.08);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .option.correct{ border-color: var(--accent-teal); background: rgba(79,209,197,0.12); }
+  .option.correct .tag{ background: var(--accent-teal); color: #0B2421; }
+  .option.wrong{ border-color: var(--accent-coral); background: rgba(255,107,107,0.10); }
+  .option.wrong .tag{ background: var(--accent-coral); color: #2B0B0B; }
+  .option.locked:not(.correct):not(.wrong){ opacity: 0.45; }
+
+  .explain{
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent-amber);
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    display:none;
+  }
+  .explain.show{ display:block; }
+  .explain strong{ color: var(--text-primary); }
+
+  .next-btn{
+    margin-top: 22px;
+    width:100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: var(--accent-amber);
+    color: #2B1B00;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor:pointer;
+    display:none;
+    transition: filter .2s ease;
+  }
+  .next-btn.show{ display:block; }
+  .next-btn:hover{ filter: brightness(1.08); }
+
+  /* Result screen */
+  .result{ display:none; text-align:center; }
+  .result.show{ display:block; }
+  .result .score-num{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 64px;
+    font-weight: 700;
+    margin: 6px 0 2px;
+    background: linear-gradient(135deg, var(--accent-amber), var(--accent-teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .result .score-sub{ color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+  .result .verdict{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .result .verdict-desc{
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 440px;
+    margin-left:auto; margin-right:auto;
+  }
+  .breakdown{
+    display:flex; gap:12px; margin-bottom:24px;
+  }
+  .breakdown .b-item{
+    flex:1; background: var(--surface-2); border-radius: 14px; padding: 14px;
+    border: 1px solid var(--border);
+  }
+  .breakdown .b-num{ font-family:'Space Grotesk', sans-serif; font-size:22px; font-weight:700; }
+  .breakdown .b-label{ font-size: 12px; color: var(--text-muted); margin-top:4px; }
+
+  .retry-btn{
+    padding: 14px 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor:pointer;
+    transition: border-color .2s ease;
+  }
+  .retry-btn:hover{ border-color: var(--accent-amber); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
 </head>
 <body>
 
-<div class="quiz-container">
-    <h2>Latihan Soal Modul 9:<br>Pemasaran di Era Digital</h2>
-    <div id="quiz-area">
-        <div id="question-text" class="question">Memuat pertanyaan...</div>
-        <ul id="options-area" class="options"></ul>
-        <div id="feedback-area" class="feedback"></div>
-        <button id="next-btn" class="next-btn" onclick="nextQuestion()">Pertanyaan Selanjutnya</button>
+<div class="app">
+  <p class="eyebrow">MKWI4203 · Kewirausahaan di Era Digital</p>
+  <h1>Modul 9 — Pemasaran di Era Digital</h1>
+
+  <div class="progress-track" id="progressTrack"></div>
+  <div class="progress-label">
+    <span id="progressText">Soal 1 dari 20</span>
+    <span id="scoreText">Skor: 0</span>
+  </div>
+
+  <div class="card" id="quizCard">
+    <p class="q-meta" id="qMeta">Kegiatan Belajar 1</p>
+    <p class="q-text" id="qText"></p>
+    <div class="options" id="optionsContainer"></div>
+    <div class="explain" id="explainBox"></div>
+    <button class="next-btn" id="nextBtn">Lanjut →</button>
+  </div>
+
+  <div class="card result" id="resultCard">
+    <p class="eyebrow" style="text-align:center;">Hasil Modul 9</p>
+    <div class="score-num" id="finalScore">0/20</div>
+    <p class="score-sub" id="finalPercent">0%</p>
+    <p class="verdict" id="verdictTitle"></p>
+    <p class="verdict-desc" id="verdictDesc"></p>
+    <div class="breakdown">
+      <div class="b-item">
+        <div class="b-num" id="kb1Score">0/10</div>
+        <div class="b-label">KB1 · Strategi Merek & Posisi Pasar</div>
+      </div>
+      <div class="b-item">
+        <div class="b-num" id="kb2Score">0/10</div>
+        <div class="b-label">KB2 · Saluran & Rencana Penjualan</div>
+      </div>
     </div>
-    <div id="score-area" class="score-container">
-        <h3 id="final-score"></h3>
-        <button class="next-btn" style="display:block;" onclick="location.reload()">Ulangi Kuis</button>
-    </div>
+    <button class="retry-btn" id="retryBtn">Ulangi Kuis Modul 9</button>
+  </div>
 </div>
 
 <script>
-    const questions = [
-        {
-            question: "Keunggulan absolut dari Digital Marketing dibandingkan dengan Pemasaran Konvensional (seperti pasang iklan di baliho atau koran) adalah...",
-            options: [
-                { text: "Bebas dari segala jenis pajak periklanan", correct: false, rationale: "Iklan digital tetap tunduk pada pajak platform dan regulasi negara." },
-                { text: "Sifatnya yang sangat terukur (measurable), di mana setiap klik, interaksi, dan konversi bisa dilacak secara real-time", correct: true, rationale: "Data metrik yang rinci memungkinkan pengiklan menghitung ROI (Return of Investment) secara akurat." },
-                { text: "Harga pembuatannya yang selalu lebih mahal daripada iklan TV", correct: false, rationale: "Iklan digital justru sangat fleksibel dan bisa dimulai dengan anggaran kecil." },
-                { text: "Komunikasinya bersifat satu arah tanpa interaksi", correct: false, rationale: "Digital marketing justru memungkinkan komunikasi dua arah lewat kolom komentar atau pesan langsung." }
-            ]
-        },
-        {
-            question: "Praktik mengoptimalkan halaman website agar muncul di peringkat teratas hasil pencarian Google secara organik (gratis) disebut dengan istilah...",
-            options: [
-                { text: "SEM (Search Engine Marketing)", correct: false, rationale: "SEM melibatkan pembayaran untuk tampil di halaman pencarian (PPC/Pay Per Click)." },
-                { text: "SEO (Search Engine Optimization)", correct: true, rationale: "SEO berfokus pada optimasi kata kunci, kualitas konten, dan struktur web agar disukai algoritma Google secara alami." },
-                { text: "SMM (Social Media Marketing)", correct: false, rationale: "Ini adalah pemasaran di platform media sosial seperti Instagram atau TikTok." },
-                { text: "Affiliate Marketing", correct: false, rationale: "Ini adalah model komisi berbasis rekomendasi." }
-            ]
-        },
-        {
-            question: "Tujuan utama dari strategi 'Content Marketing' (Pemasaran Konten) adalah...",
-            options: [
-                { text: "Melakukan hard-selling secara agresif di setiap postingan", correct: false, rationale: "Hard-selling yang terus menerus justru membuat audiens jenuh dan lari." },
-                { text: "Mendistribusikan brosur cetak di pusat keramaian", correct: false, rationale: "Ini adalah bentuk pemasaran offline/konvensional." },
-                { text: "Menarik dan mempertahankan audiens dengan menciptakan konten yang relevan, bernilai, dan edukatif sebelum akhirnya mendorong aksi pembelian", correct: true, rationale: "Content marketing membangun kepercayaan dan otoritas merek perlahan-lahan melalui konten yang bermanfaat bagi audiens." },
-                { text: "Membeli followers palsu agar akun terlihat kredibel", correct: false, rationale: "Praktik ini sangat dilarang dan merusak reputasi merek (black hat marketing)." }
-            ]
-        },
-        {
-            question: "Jika Anda mengunjungi sebuah website e-commerce untuk melihat sepatu, lalu iklan sepatu tersebut terus 'mengikuti' Anda di website lain atau media sosial yang Anda buka, taktik ini disebut...",
-            options: [
-                { text: "Email Spamming", correct: false, rationale: "Spam adalah email massal yang tidak diinginkan." },
-                { text: "Influencer Endorsement", correct: false, rationale: "Ini adalah promosi yang dilakukan oleh tokoh terkenal." },
-                { text: "Retargeting / Remarketing", correct: true, rationale: "Taktik ini menggunakan 'cookies' di browser untuk melacak pengguna dan menampilkan iklan yang relevan untuk mengingatkan mereka agar kembali dan membeli." },
-                { text: "Cold Calling", correct: false, rationale: "Menelpon calon pelanggan potensial yang belum pernah berinteraksi sebelumnya." }
-            ]
-        },
-        {
-            question: "Dalam menganalisis keberhasilan kampanye Social Media Marketing, metrik 'Engagement Rate' (Tingkat Interaksi) mengukur...",
-            options: [
-                { text: "Jumlah interaksi (likes, comments, shares, saves) dibagi dengan jumlah pengikut (followers) atau jumlah jangkauan (reach)", correct: true, rationale: "Engagement rate adalah indikator terbaik untuk mengetahui apakah konten Anda benar-benar dinikmati dan memancing respons audiens, bukan sekadar lewat di beranda." },
-                { text: "Total biaya yang dihabiskan untuk membayar influencer", correct: false, rationale: "Ini disebut Cost per Action (CPA) atau metrik anggaran finansial." },
-                { text: "Kecepatan loading dari website utama perusahaan", correct: false, rationale: "Ini adalah metrik teknis performa web, bukan interaksi sosial media." },
-                { text: "Jumlah total kompetitor di industri yang sama", correct: false, rationale: "Ini adalah data riset pasar, bukan metrik kampanye internal." }
-            ]
-        }
-    ];
+const questions = [
+  // ===== KB1: Strategi Pengelolaan Merek dan Penetapan Posisi Pasar (1-10) =====
+  {
+    kb: 1,
+    q: "Apa perbedaan paling mendasar antara 'Produk' dan 'Merek' (Brand)?",
+    options: [
+      "Produk selalu memiliki logo, sedangkan merek tidak memiliki bentuk fisik sama sekali",
+      "Produk adalah sesuatu yang diproduksi di pabrik, sedangkan merek adalah sesuatu yang diciptakan dan diyakini oleh konsumen di benak mereka",
+      "Produk hanya dijual secara luring, sedangkan merek hanya dijual secara daring",
+      "Merek dan produk adalah dua kata dengan arti yang persis sama dalam bisnis"
+    ],
+    correct: 1,
+    explain: "Produk mudah ditiru oleh kompetitor, namun merek (brand)—yang mencakup identitas, reputasi, dan ikatan emosional—adalah aset unik yang tertanam di benak dan hati konsumen."
+  },
+  {
+    kb: 1,
+    q: "Tindakan merancang penawaran dan citra perusahaan agar menempati posisi khusus (unik) di benak target pasar disebut...",
+    options: [
+      "Market Penetration (Penetrasi Pasar)",
+      "Brand Positioning (Penetapan Posisi Merek)",
+      "Product Diversification (Diversifikasi Produk)",
+      "Mass Marketing (Pemasaran Massal)"
+    ],
+    correct: 1,
+    explain: "Brand Positioning adalah strategi untuk membuat merek Anda diingat untuk satu alasan spesifik tertentu oleh audiens (misal: Volvo diposisikan sebagai mobil paling 'Aman')."
+  },
+  {
+    kb: 1,
+    q: "Dalam merumuskan posisi pasar yang kuat, sebuah merek harus memiliki nilai unik yang membedakannya dari pesaing. Konsep ini lazim disingkat dengan...",
+    options: [
+      "SEO (Search Engine Optimization)",
+      "CRM (Customer Relationship Management)",
+      "USP (Unique Selling Proposition)",
+      "ROI (Return on Investment)"
+    ],
+    correct: 2,
+    explain: "USP (Proposisi Penjualan Unik) adalah satu fitur atau manfaat spesifik yang membuat produk Anda berbeda dan lebih baik daripada semua pesaing lainnya di pasar."
+  },
+  {
+    kb: 1,
+    q: "Nilai tambah berupa uang, reputasi, atau kekuatan komersial yang melekat pada sebuah produk/jasa berkat nama merek yang dikenal baik oleh konsumen disebut...",
+    options: [
+      "Brand Equity (Ekuitas Merek)",
+      "Brand Disruption (Disrupsi Merek)",
+      "Cost of Goods Sold (Harga Pokok Penjualan)",
+      "Depreciation (Penyusutan Nilai)"
+    ],
+    correct: 0,
+    explain: "Ekuitas merek memungkinkan perusahaan (seperti Apple atau Starbucks) untuk menjual produk dengan harga (premium) jauh lebih mahal dari biaya produksinya hanya karena logo yang melekat."
+  },
+  {
+    kb: 1,
+    q: "Alat visual yang sering digunakan oleh wirausahawan untuk memetakan di mana posisi merek mereka dibandingkan kompetitor berdasarkan dua sumbu atribut (misalnya: 'Harga' vs 'Kualitas') adalah...",
+    options: [
+      "Perceptual Map (Peta Persepsi)",
+      "Gantt Chart",
+      "Business Model Canvas",
+      "Income Statement (Laporan Laba Rugi)"
+    ],
+    correct: 0,
+    explain: "Peta Persepsi membantu pemasar melihat 'celah kosong' (white space) di pasar secara visual. Jika kuadran Harga Murah & Kualitas Tinggi kosong, itu bisa menjadi peluang."
+  },
+  {
+    kb: 1,
+    q: "Ketika sebuah perusahaan mengubah logo, nama, slogan, atau citra mereknya secara fundamental untuk memperbaiki reputasi buruk atau beradaptasi dengan segmen pasar yang baru, tindakan ini disebut...",
+    options: [
+      "Co-Branding",
+      "Debranding",
+      "Rebranding",
+      "Franchising"
+    ],
+    correct: 2,
+    explain: "Rebranding adalah penyegaran atau perombakan total identitas merek agar relevan kembali dengan dinamika pasar yang terus berubah."
+  },
+  {
+    kb: 1,
+    q: "Strategi di mana perusahaan memutuskan untuk hanya melayani satu segmen pasar yang sangat kecil dan spesifik, namun sangat menguntungkan karena minimnya pesaing, disebut strategi penetapan posisi...",
+    options: [
+      "Mass Market (Pasar Massal)",
+      "Niche Market (Pasar Ceruk)",
+      "Monopoly (Monopoli)",
+      "Commodity Market (Pasar Komoditas)"
+    ],
+    correct: 1,
+    explain: "Niche Market berfokus pada kelompok audiens kecil dengan kebutuhan khusus yang belum terlayani oleh pemain besar (misalnya: sampo khusus penderita psoriasis kulit kepala)."
+  },
+  {
+    kb: 1,
+    q: "Kolaborasi di mana dua merek (brand) terkenal digabungkan dalam satu penawaran produk agar masing-masing bisa memperluas target pasar (misalnya: Sepatu Nike seri Apple Watch) disebut...",
+    options: [
+      "Private Labeling",
+      "Generic Branding",
+      "Co-branding",
+      "Acquisition (Akuisisi)"
+    ],
+    correct: 2,
+    explain: "Co-branding adalah aliansi strategis di mana dua merek bersinergi dan meminjam ekuitas/reputasi satu sama lain untuk meluncurkan satu penawaran yang sangat kuat."
+  },
+  {
+    kb: 1,
+    q: "Di era digital, tingkatan tertinggi dari kekuatan sebuah merek di mana pelanggan bukan hanya sekadar membeli, melainkan secara aktif dan sukarela membela merek tersebut saat diserang oleh haters di media sosial disebut...",
+    options: [
+      "Brand Awareness (Kesadaran Merek)",
+      "Brand Advocacy (Advokasi Merek)",
+      "Brand Identity (Identitas Merek)",
+      "Brand Fatigue (Kelelahan Merek)"
+    ],
+    correct: 1,
+    explain: "Advocacy adalah puncak tertinggi piramida pemasaran. Konsumen menjadi pengacara gratis bagi merek, merekomendasikannya, dan membelanya dari opini negatif."
+  },
+  {
+    kb: 1,
+    q: "Langkah pertama yang paling mendasar saat ingin menetapkan 'Brand Positioning' sebuah usaha digital baru adalah...",
+    options: [
+      "Langsung mencetak ribuan brosur fisik untuk disebar di jalan raya",
+      "Memahami dan mendefinisikan dengan jelas 'Siapa Target Audiens' dan 'Apa Masalah (Pain Points) Mereka'",
+      "Menyewa influencer termahal di negara tersebut",
+      "Membuat logo tiga dimensi yang sangat rumit"
+    ],
+    correct: 1,
+    explain: "Semua strategi merek harus diawali dari empati terhadap pelanggan. Posisi yang kuat lahir dari pemahaman mendalam tentang masalah spesifik audiens yang ingin diselesaikan."
+  },
 
-    let currentQIndex = 0;
-    let score = 0;
+  // ===== KB2: Penentuan Saluran Pemasaran dan Merencanakan Penjualan (11-20) =====
+  {
+    kb: 2,
+    q: "Model penentuan saluran di mana produsen menjual produknya secara langsung kepada konsumen akhir (misal melalui website atau Instagram) tanpa melewati rantai distributor/supermarket besar disebut...",
+    options: [
+      "B2B (Business to Business)",
+      "D2C (Direct to Consumer)",
+      "Multi-Level Marketing (MLM)",
+      "Dropshipping"
+    ],
+    correct: 1,
+    explain: "Model D2C di era digital sangat populer karena memungkinkan merek memotong biaya perantara, serta mendapatkan data perilaku konsumen mereka secara langsung (first-party data)."
+  },
+  {
+    kb: 2,
+    q: "Strategi digital yang menyatukan seluruh saluran pemasaran dan penjualan (toko luring, web, aplikasi seluler) secara seamless/mulus sehingga pelanggan mendapat pengalaman berbelanja yang terintegrasi penuh disebut...",
+    options: [
+      "Single-channel",
+      "Omnichannel",
+      "Multichannel",
+      "Franchise channel"
+    ],
+    correct: 1,
+    explain: "Omnichannel memastikan bahwa batas antara dunia fisik dan digital melebur. Contoh: Pelanggan membeli barang via aplikasi, namun mengambilnya di toko fisik (Click & Collect)."
+  },
+  {
+    kb: 2,
+    q: "Sebuah skema saluran penjualan digital di mana perusahaan memberikan komisi kepada mitra (pihak ketiga) setiap kali ada pelanggan yang berhasil membeli dari tautan/link yang disebarkan mitra tersebut disebut...",
+    options: [
+      "Affiliate Marketing (Pemasaran Afiliasi)",
+      "Retargeting Ads",
+      "Cold Emailing",
+      "Search Engine Optimization (SEO)"
+    ],
+    correct: 0,
+    explain: "Pemasaran Afiliasi adalah model berbagi pendapatan (revenue sharing). Perusahaan hanya membayar biaya pemasaran (komisi) jika penjualan benar-benar berhasil terjadi."
+  },
+  {
+    kb: 2,
+    q: "Dalam ilmu perencanaan penjualan, model visual (berbentuk kerucut) yang melacak perjalanan calon pembeli dari sekadar mengetahui produk (Awareness) hingga akhirnya mau membeli produk tersebut disebut...",
+    options: [
+      "Business Model Canvas",
+      "Gantt Chart",
+      "Sales Funnel (Corong Penjualan)",
+      "Supply Chain (Rantai Pasok)"
+    ],
+    correct: 2,
+    explain: "Sales Funnel menggambarkan jumlah orang yang semakin mengerucut di setiap fasenya. Ada 100 orang melihat iklan, 50 klik link, 10 masuk keranjang, tapi mungkin hanya 2 yang bayar."
+  },
+  {
+    kb: 2,
+    q: "Saluran pemasaran digital yang berfokus kuat pada optimasi teknis, konten web, dan kata kunci agar website perusahaan muncul di halaman pertama hasil pencarian Google secara gratis (organik) adalah...",
+    options: [
+      "SEM (Search Engine Marketing - Iklan Berbayar)",
+      "SMM (Social Media Marketing)",
+      "SEO (Search Engine Optimization)",
+      "Pay-Per-Click (PPC)"
+    ],
+    correct: 2,
+    explain: "SEO adalah strategi jangka panjang. Alih-alih membayar untuk posisi teratas (SEM/PPC), SEO merayu algoritma mesin pencari dengan kualitas relevansi konten."
+  },
+  {
+    kb: 2,
+    q: "Ketika menyusun materi halaman penjualan (Landing Page), elemen desain berupa tombol atau teks interaktif yang dengan jelas menginstruksikan pengunjung melakukan tindakan (misal: 'Beli Sekarang' atau 'Unduh Gratis') disebut...",
+    options: [
+      "FAQ (Frequently Asked Questions)",
+      "Footer",
+      "Call to Action (CTA)",
+      "Testimonial"
+    ],
+    correct: 2,
+    explain: "CTA adalah penentu konversi. Tanpa CTA yang jelas, pengunjung akan kebingungan harus melakukan langkah apa setelah membaca promosi produk."
+  },
+  {
+    kb: 2,
+    q: "Metrik krusial dalam merencanakan anggaran penjualan digital adalah menghitung 'Customer Acquisition Cost' (CAC). Metrik CAC ini mengukur...",
+    options: [
+      "Laba bersih yang didapat dari satu pelanggan selama hidupnya",
+      "Total biaya rata-rata yang dikeluarkan perusahaan untuk pemasaran dan penjualan demi mendapatkan satu pelanggan baru",
+      "Jumlah pengikut (followers) baru di Instagram per bulan",
+      "Pajak penghasilan yang dibayarkan konsumen"
+    ],
+    correct: 1,
+    explain: "Jika CAC lebih besar daripada margin keuntungan dari barang yang dijual, maka strategi penjualan perusahaan dianggap rugi (bakar uang tidak efisien) dan harus segera dievaluasi."
+  },
+  {
+    kb: 2,
+    q: "Untuk produk perangkat lunak skala enterprise (misal: Software Akuntansi Korporat), saluran pemasaran yang paling efektif untuk merencanakan dan menutup penjualan B2B (Business to Business) adalah melalui...",
+    options: [
+      "Video joget viral di TikTok",
+      "Email outreach profesional, LinkedIn, dan presentasi webinar edukatif",
+      "Memasang poster kecil di tiang listrik pinggir jalan",
+      "Beriklan di dalam game online anak-anak"
+    ],
+    correct: 1,
+    explain: "Penjualan B2B melibatkan siklus yang lebih panjang dan pengambil keputusan profesional (manajer/direktur). Saluran profesional seperti LinkedIn atau webinar jauh lebih meyakinkan daripada taktik massal."
+  },
+  {
+    kb: 2,
+    q: "Dalam perencanaan distribusi era e-commerce, skema di mana wirausahawan tidak perlu menyimpan fisik barang, melainkan hanya mempromosikan produk dan pesanan langsung dikirim oleh pabrik (supplier) kepada pembeli akhir disebut...",
+    options: [
+      "Dropshipping",
+      "Gudang Konsinyasi",
+      "Retail Konvensional",
+      "Manufaktur Massal"
+    ],
+    correct: 0,
+    explain: "Dropshipping sangat diminati oleh wirausaha digital pemula karena memangkas modal biaya sewa gudang dan menghilangkan risiko barang tidak laku (dead stock)."
+  },
+  {
+    kb: 2,
+    q: "Metrik dalam tahapan corong penjualan (sales funnel) yang menunjukkan persentase pengunjung website atau aplikasi yang akhirnya benar-benar menyelesaikan pembayaran adalah...",
+    options: [
+      "Bounce Rate (Tingkat Pentalan)",
+      "Engagement Rate (Tingkat Interaksi Likes)",
+      "Conversion Rate (Tingkat Konversi)",
+      "Churn Rate (Tingkat Pembatalan Berlangganan)"
+    ],
+    correct: 2,
+    explain: "Conversion Rate (Tingkat Konversi) adalah tujuan akhir (bottom of the funnel). Jika dari 100 pengunjung ada 5 yang membeli, maka tingkat konversi penjualan adalah 5%."
+  }
+];
 
-    function loadQuestion() {
-        const q = questions[currentQIndex];
-        document.getElementById('question-text').innerText = (currentQIndex + 1) + ". " + q.question;
-        const optionsArea = document.getElementById('options-area');
-        optionsArea.innerHTML = '';
-        document.getElementById('feedback-area').style.display = 'none';
-        document.getElementById('next-btn').style.display = 'none';
+let current = 0;
+let score = 0;
+let locked = false;
+const answers = new Array(questions.length).fill(null); 
 
-        q.options.forEach((opt, index) => {
-            const li = document.createElement('li');
-            const btn = document.createElement('button');
-            btn.innerText = opt.text;
-            btn.onclick = () => checkAnswer(index, btn);
-            li.appendChild(btn);
-            optionsArea.appendChild(li);
-        });
+const progressTrack = document.getElementById('progressTrack');
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const qMeta = document.getElementById('qMeta');
+const qText = document.getElementById('qText');
+const optionsContainer = document.getElementById('optionsContainer');
+const explainBox = document.getElementById('explainBox');
+const nextBtn = document.getElementById('nextBtn');
+const quizCard = document.getElementById('quizCard');
+const resultCard = document.getElementById('resultCard');
+
+function buildProgress(){
+  progressTrack.innerHTML = '';
+  questions.forEach((_, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'progress-bar';
+    const h = 30 + (i / (questions.length - 1)) * 70;
+    bar.style.height = h + '%';
+    progressTrack.appendChild(bar);
+  });
+}
+
+function refreshProgress(){
+  const bars = progressTrack.children;
+  for(let i=0;i<bars.length;i++){
+    bars[i].classList.remove('current','correct','wrong');
+    if(answers[i] === 'correct') bars[i].classList.add('correct');
+    else if(answers[i] === 'wrong') bars[i].classList.add('wrong');
+    else if(i === current) bars[i].classList.add('current');
+  }
+  progressText.textContent = `Soal ${current+1} dari ${questions.length}`;
+  scoreText.textContent = `Skor: ${score}`;
+}
+
+function renderQuestion(){
+  locked = false;
+  const item = questions[current];
+  qMeta.textContent = `Kegiatan Belajar ${item.kb}`;
+  qText.textContent = item.q;
+  optionsContainer.innerHTML = '';
+  explainBox.classList.remove('show');
+  explainBox.innerHTML = '';
+  nextBtn.classList.remove('show');
+  nextBtn.textContent = current === questions.length - 1 ? 'Lihat Hasil →' : 'Lanjut →';
+
+  item.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="tag">${String.fromCharCode(65+idx)}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => selectOption(idx, btn));
+    optionsContainer.appendChild(btn);
+  });
+
+  refreshProgress();
+}
+
+function selectOption(idx, btnEl){
+  if(locked) return;
+  locked = true;
+  const item = questions[current];
+  const allBtns = optionsContainer.querySelectorAll('.option');
+  allBtns.forEach(b => b.classList.add('locked'));
+
+  if(idx === item.correct){
+    btnEl.classList.add('correct');
+    answers[current] = 'correct';
+    score++;
+  } else {
+    btnEl.classList.add('wrong');
+    allBtns[item.correct].classList.add('correct');
+    answers[current] = 'wrong';
+  }
+
+  explainBox.innerHTML = `<strong>${idx === item.correct ? 'Benar.' : 'Kurang tepat.'}</strong> ${item.explain}`;
+  explainBox.classList.add('show');
+  nextBtn.classList.add('show');
+  refreshProgress();
+}
+
+nextBtn.addEventListener('click', () => {
+  if(current < questions.length - 1){
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  quizCard.style.display = 'none';
+  resultCard.classList.add('show');
+
+  document.getElementById('finalScore').textContent = `${score}/${questions.length}`;
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('finalPercent').textContent = `${pct}% jawaban benar`;
+
+  let kb1 = 0, kb2 = 0;
+  questions.forEach((q, i) => {
+    if(answers[i] === 'correct'){
+      if(q.kb === 1) kb1++; else kb2++;
     }
+  });
+  document.getElementById('kb1Score').textContent = `${kb1}/10`;
+  document.getElementById('kb2Score').textContent = `${kb2}/10`;
 
-    function checkAnswer(selectedIndex, btn) {
-        const q = questions[currentQIndex];
-        const isCorrect = q.options[selectedIndex].correct;
-        const buttons = document.querySelectorAll('.options button');
-        
-        buttons.forEach(b => b.disabled = true);
+  let title, desc;
+  if(score >= 18){
+    title = 'Pakar Pemasaran Digital';
+    desc = 'Sempurna! Anda sudah layak menjadi Chief Marketing Officer (CMO). Pemahaman tentang ekuitas merek dan *sales funnel* sangat solid.';
+  } else if(score >= 14){
+    title = 'Ahli Konversi Potensial';
+    desc = 'Bagus sekali! Sedikit penyesuaian pada metrik konversi (CAC/Conversion) dan *channel* pemasaran, Anda siap meluncurkan kampanye!';
+  } else if(score >= 10){
+    title = 'Perbaiki *Brand Positioning*';
+    desc = 'Waspada, teori penempatan posisi (*positioning*) dan metrik saluran Anda masih bercampur dengan pemasaran gaya lama.';
+  } else {
+    title = 'Kembali ke *Sales Funnel*';
+    desc = 'Mari kita evaluasi ulang. Fokus membaca konsep *SEO, Corong Penjualan, dan Unique Selling Proposition (USP)* sebelum mengulang.';
+  }
+  document.getElementById('verdictTitle').textContent = title;
+  document.getElementById('verdictDesc').textContent = desc;
+}
 
-        if (isCorrect) {
-            btn.classList.add('btn-correct');
-            score++;
-            showFeedback("Benar! " + q.options[selectedIndex].rationale, "correct");
-        } else {
-            btn.classList.add('btn-wrong');
-            const correctIndex = q.options.findIndex(o => o.correct);
-            buttons[correctIndex].classList.add('btn-correct');
-            showFeedback("Salah. " + q.options[selectedIndex].rationale, "wrong");
-        }
-        document.getElementById('next-btn').style.display = 'block';
-    }
+document.getElementById('retryBtn').addEventListener('click', () => {
+  current = 0; score = 0; answers.fill(null);
+  resultCard.classList.remove('show');
+  quizCard.style.display = 'block';
+  renderQuestion();
+});
 
-    function showFeedback(text, type) {
-        const fb = document.getElementById('feedback-area');
-        fb.innerText = text;
-        fb.className = 'feedback ' + type;
-        fb.style.display = 'block';
-    }
-
-    function nextQuestion() {
-        currentQIndex++;
-        if (currentQIndex < questions.length) {
-            loadQuestion();
-        } else {
-            document.getElementById('quiz-area').style.display = 'none';
-            document.getElementById('score-area').style.display = 'block';
-            document.getElementById('final-score').innerText = "Skor Anda: " + score + " / " + questions.length;
-        }
-    }
-
-    loadQuestion();
+buildProgress();
+renderQuestion();
 </script>
-
 </body>
 </html>

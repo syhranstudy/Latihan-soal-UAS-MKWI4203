@@ -1,155 +1,658 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis MKWI4203 - Modul 8</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
-        .quiz-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #2c3e50; }
-        .question { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
-        .options { list-style-type: none; padding: 0; }
-        .options li { margin-bottom: 10px; }
-        .options button { width: 100%; padding: 15px; text-align: left; background: #e9ecef; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 1em; transition: 0.3s; }
-        .options button:hover { background: #dce1e6; }
-        .options button:disabled { cursor: not-allowed; }
-        .btn-correct { background: #d4edda !important; border-color: #c3e6cb !important; color: #155724; }
-        .btn-wrong { background: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24; }
-        .feedback { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
-        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .next-btn { display: none; width: 100%; padding: 15px; margin-top: 20px; background: #fd7e14; color: white; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
-        .next-btn:hover { background: #e86e04; }
-        .score-container { text-align: center; display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Modul 8 — Kewirausahaan di Era Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14172B;
+    --surface: #1C2046;
+    --surface-2: #262B56;
+    --accent-amber: #F2A93B;
+    --accent-teal: #4FD1C5;
+    --accent-coral: #FF6B6B;
+    --text-primary: #F5F3EE;
+    --text-muted: #9CA3C4;
+    --border: rgba(245,243,238,0.10);
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: radial-gradient(circle at 20% -10%, #232958 0%, var(--bg) 55%);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding: 32px 16px 64px;
+  }
+
+  .app{ width:100%; max-width: 640px; }
+
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-amber);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+
+  h1{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 5vw, 28px);
+    font-weight: 700;
+    margin: 0 0 18px;
+    line-height: 1.25;
+  }
+
+  .progress-track{
+    display:flex;
+    align-items:flex-end;
+    gap: 3px;
+    height: 36px;
+    margin-bottom: 8px;
+  }
+  .progress-bar{
+    flex:1;
+    background: var(--border);
+    border-radius: 3px 3px 0 0;
+    transition: background .35s ease, transform .35s ease;
+    transform-origin: bottom;
+  }
+  .progress-bar.current{ background: var(--accent-amber); }
+  .progress-bar.correct{ background: var(--accent-teal); }
+  .progress-bar.wrong{ background: var(--accent-coral); }
+
+  .progress-label{
+    display:flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+  .progress-label span:last-child{ font-weight:600; color: var(--text-primary); }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+  }
+
+  .q-meta{
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .q-text{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 22px;
+  }
+
+  .options{ display:flex; flex-direction:column; gap: 10px; }
+
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap: 12px;
+    text-align:left;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, transform .15s ease;
+  }
+  .option:hover:not(.locked){ border-color: var(--accent-amber); transform: translateY(-1px); }
+  .option:focus-visible{ outline: 2px solid var(--accent-amber); outline-offset: 2px; }
+
+  .option .tag{
+    flex-shrink:0;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: rgba(245,243,238,0.08);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .option.correct{ border-color: var(--accent-teal); background: rgba(79,209,197,0.12); }
+  .option.correct .tag{ background: var(--accent-teal); color: #0B2421; }
+  .option.wrong{ border-color: var(--accent-coral); background: rgba(255,107,107,0.10); }
+  .option.wrong .tag{ background: var(--accent-coral); color: #2B0B0B; }
+  .option.locked:not(.correct):not(.wrong){ opacity: 0.45; }
+
+  .explain{
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent-amber);
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    display:none;
+  }
+  .explain.show{ display:block; }
+  .explain strong{ color: var(--text-primary); }
+
+  .next-btn{
+    margin-top: 22px;
+    width:100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: var(--accent-amber);
+    color: #2B1B00;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor:pointer;
+    display:none;
+    transition: filter .2s ease;
+  }
+  .next-btn.show{ display:block; }
+  .next-btn:hover{ filter: brightness(1.08); }
+
+  /* Result screen */
+  .result{ display:none; text-align:center; }
+  .result.show{ display:block; }
+  .result .score-num{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 64px;
+    font-weight: 700;
+    margin: 6px 0 2px;
+    background: linear-gradient(135deg, var(--accent-amber), var(--accent-teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .result .score-sub{ color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+  .result .verdict{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .result .verdict-desc{
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 440px;
+    margin-left:auto; margin-right:auto;
+  }
+  .breakdown{
+    display:flex; gap:12px; margin-bottom:24px;
+  }
+  .breakdown .b-item{
+    flex:1; background: var(--surface-2); border-radius: 14px; padding: 14px;
+    border: 1px solid var(--border);
+  }
+  .breakdown .b-num{ font-family:'Space Grotesk', sans-serif; font-size:22px; font-weight:700; }
+  .breakdown .b-label{ font-size: 12px; color: var(--text-muted); margin-top:4px; }
+
+  .retry-btn{
+    padding: 14px 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor:pointer;
+    transition: border-color .2s ease;
+  }
+  .retry-btn:hover{ border-color: var(--accent-amber); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
 </head>
 <body>
 
-<div class="quiz-container">
-    <h2>Latihan Soal Modul 8:<br>Kepemimpinan & Pembentukan Tim</h2>
-    <div id="quiz-area">
-        <div id="question-text" class="question">Memuat pertanyaan...</div>
-        <ul id="options-area" class="options"></ul>
-        <div id="feedback-area" class="feedback"></div>
-        <button id="next-btn" class="next-btn" onclick="nextQuestion()">Pertanyaan Selanjutnya</button>
+<div class="app">
+  <p class="eyebrow">MKWI4203 · Kewirausahaan di Era Digital</p>
+  <h1>Modul 8 — Kepemimpinan & Pembentukan Tim</h1>
+
+  <div class="progress-track" id="progressTrack"></div>
+  <div class="progress-label">
+    <span id="progressText">Soal 1 dari 20</span>
+    <span id="scoreText">Skor: 0</span>
+  </div>
+
+  <div class="card" id="quizCard">
+    <p class="q-meta" id="qMeta">Kegiatan Belajar 1</p>
+    <p class="q-text" id="qText"></p>
+    <div class="options" id="optionsContainer"></div>
+    <div class="explain" id="explainBox"></div>
+    <button class="next-btn" id="nextBtn">Lanjut →</button>
+  </div>
+
+  <div class="card result" id="resultCard">
+    <p class="eyebrow" style="text-align:center;">Hasil Modul 8</p>
+    <div class="score-num" id="finalScore">0/20</div>
+    <p class="score-sub" id="finalPercent">0%</p>
+    <p class="verdict" id="verdictTitle"></p>
+    <p class="verdict-desc" id="verdictDesc"></p>
+    <div class="breakdown">
+      <div class="b-item">
+        <div class="b-num" id="kb1Score">0/10</div>
+        <div class="b-label">KB1 · Shared Leadership</div>
+      </div>
+      <div class="b-item">
+        <div class="b-num" id="kb2Score">0/10</div>
+        <div class="b-label">KB2 · Tim yang Efektif</div>
+      </div>
     </div>
-    <div id="score-area" class="score-container">
-        <h3 id="final-score"></h3>
-        <button class="next-btn" style="display:block;" onclick="location.reload()">Ulangi Kuis</button>
-    </div>
+    <button class="retry-btn" id="retryBtn">Ulangi Kuis Modul 8</button>
+  </div>
 </div>
 
 <script>
-    const questions = [
-        {
-            question: "Gaya kepemimpinan yang paling ideal untuk menghadapi era digital yang penuh ketidakpastian (VUCA) adalah...",
-            options: [
-                { text: "Kepemimpinan Otoriter (Authoritarian)", correct: false, rationale: "Gaya ini kaku dan menghambat kelincahan tim." },
-                { text: "Kepemimpinan Transaksional", correct: false, rationale: "Fokus hanya pada reward dan punishment, kurang memicu inovasi out-of-the-box." },
-                { text: "Kepemimpinan Agile (Tangkas) dan Transformasional", correct: true, rationale: "Pemimpin agile mampu beradaptasi dengan cepat, sementara gaya transformasional menginspirasi tim untuk berinovasi." },
-                { text: "Kepemimpinan Laissez-Faire (Bebas)", correct: false, rationale: "Terlalu bebas tanpa arah justru berbahaya di era yang kompleks." }
-            ]
-        },
-        {
-            question: "Menurut teori perkembangan kelompok dari Tuckman, tahap di mana anggota tim mulai mengalami konflik, perbedaan pendapat, dan adu pengaruh disebut fase...",
-            options: [
-                { text: "Forming (Pembentukan)", correct: false, rationale: "Ini adalah fase perkenalan awal yang masih canggung tapi sopan." },
-                { text: "Storming (Pancah pancaroba/Konflik)", correct: true, rationale: "Storming adalah fase krusial di mana kepribadian dan gaya kerja mulai berbenturan untuk mencari kesepakatan." },
-                { text: "Norming (Penormalan)", correct: false, rationale: "Di tahap ini, aturan dan norma kerja tim sudah disepakati bersama." },
-                { text: "Performing (Berkinerja)", correct: false, rationale: "Tim sudah berfungsi secara optimal dan mandiri." }
-            ]
-        },
-        {
-            question: "Tantangan terbesar dalam mengelola 'Virtual Team' (Tim Virtual) yang bekerja secara remote/jarak jauh di era digital adalah...",
-            options: [
-                { text: "Membangun rasa saling percaya (trust) dan komunikasi yang efektif tanpa interaksi fisik", correct: true, rationale: "Tanpa tatap muka, rawan terjadi miskomunikasi dan sulit menumbuhkan ikatan emosional antaranggota." },
-                { text: "Kesulitan mencari perangkat komputer yang memadai", correct: false, rationale: "Perangkat keras biasanya sudah bukan menjadi masalah utama bagi pekerja digital." },
-                { text: "Terlalu banyak aturan berpakaian (dress code) saat rapat", correct: false, rationale: "Tim virtual justru cenderung lebih santai soal pakaian." },
-                { text: "Tidak adanya perangkat lunak untuk konferensi video", correct: false, rationale: "Saat ini alat seperti Zoom atau Google Meet sangat melimpah dan mudah diakses." }
-            ]
-        },
-        {
-            question: "Keberagaman (Diversity) dalam komposisi sebuah tim startup digital sangat dianjurkan karena...",
-            options: [
-                { text: "Mempermudah manajer untuk memecah belah anggota tim", correct: false, rationale: "Memecah belah tim adalah tindakan merusak (toksik)." },
-                { text: "Memenuhi syarat administratif dari pemerintah semata", correct: false, rationale: "Keberagaman memiliki nilai fungsional, bukan sekadar kewajiban birokrasi." },
-                { text: "Menghasilkan spektrum sudut pandang yang lebih luas sehingga memicu pemecahan masalah dan inovasi yang lebih kaya", correct: true, rationale: "Latar belakang yang berbeda melahirkan ide-ide yang beragam untuk memecahkan masalah kompleks." },
-                { text: "Memastikan semua anggota tim memiliki keahlian teknis (coding) yang persis sama", correct: false, rationale: "Tim butuh keahlian komplementer (saling melengkapi), bukan kualifikasi yang identik." }
-            ]
-        },
-        {
-            question: "Seorang pemimpin digital yang mempraktikkan 'Empowerment' (Pemberdayaan) dalam timnya akan melakukan hal berikut...",
-            options: [
-                { text: "Mengambil alih seluruh pekerjaan sulit agar tim tidak stres", correct: false, rationale: "Ini disebut micromanagement, bukan pemberdayaan." },
-                { text: "Mendelegasikan wewenang pengambilan keputusan dan memberikan otonomi kepada anggota tim sesuai kapasitas mereka", correct: true, rationale: "Pemberdayaan berarti memberikan kepercayaan dan ruang bagi anggota tim untuk berkembang dan mengambil tanggung jawab." },
-                { text: "Menyembunyikan informasi strategis agar anggota tim tetap bergantung padanya", correct: false, rationale: "Pemimpin yang baik transparan dalam berbagi visi dan informasi." },
-                { text: "Memaksa tim bekerja lembur tanpa kompensasi tambahan", correct: false, rationale: "Ini adalah bentuk eksploitasi." }
-            ]
-        }
-    ];
+const questions = [
+  // ===== KB1: Shared Leadership dalam Pengelolaan Usaha di Era Digital (1-10) =====
+  {
+    kb: 1,
+    q: "Apa yang dimaksud dengan konsep 'Shared Leadership' (Kepemimpinan Berbagi) dalam sebuah organisasi?",
+    options: [
+      "Satu orang pemimpin absolut yang membagikan perintah ke seluruh bawahannya",
+      "Gaya kepemimpinan yang berganti-ganti setiap minggu secara acak",
+      "Kondisi di mana peran dan pengaruh kepemimpinan didistribusikan kepada beberapa atau seluruh anggota tim sesuai dengan keahlian mereka",
+      "Pemimpin perusahaan yang membagikan seluruh sahamnya kepada karyawan"
+    ],
+    correct: 2,
+    explain: "Shared leadership tidak bertumpu pada satu individu. Kekuatan dan pengambilan keputusan didistribusikan secara dinamis berdasarkan kompetensi anggota saat menghadapi masalah tertentu."
+  },
+  {
+    kb: 1,
+    q: "Mengapa gaya 'Shared Leadership' sangat relevan dan sering diterapkan pada perusahaan rintisan (startup) di era digital?",
+    options: [
+      "Karena lingkungan digital yang kompleks dan cepat berubah (VUCA) membutuhkan kolaborasi keahlian beragam untuk memecahkan masalah secara tangkas",
+      "Karena startup biasanya tidak memiliki uang untuk menggaji satu manajer tetap",
+      "Karena pemerintah mewajibkan perusahaan teknologi untuk tidak memiliki CEO",
+      "Karena struktur hierarki tradisional terbukti bekerja lebih cepat dalam inovasi software"
+    ],
+    correct: 0,
+    explain: "Kompleksitas era digital membuat satu orang pemimpin tidak mungkin mengetahui segalanya. Kolaborasi lintas keahlian (shared leadership) mempercepat respon perusahaan terhadap perubahan pasar."
+  },
+  {
+    kb: 1,
+    q: "Perbedaan paling mencolok antara Kepemimpinan Tradisional (Hierarkis) dan Shared Leadership adalah...",
+    options: [
+      "Tradisional bersifat top-down (atas ke bawah), sedangkan Shared Leadership bersifat horizontal (setara) dan berbasis jaringan",
+      "Tradisional menggunakan komputer, Shared Leadership menggunakan catatan manual",
+      "Tradisional membebaskan karyawan, Shared Leadership mengatur jadwal secara ketat",
+      "Tradisional selalu gagal, Shared Leadership selalu berhasil tanpa risiko"
+    ],
+    correct: 0,
+    explain: "Kepemimpinan tradisional bersifat vertikal (instruksi dari bos ke bawahan). Shared leadership beroperasi secara horizontal di mana anggota setara bisa mengambil inisiatif memimpin."
+  },
+  {
+    kb: 1,
+    q: "Prasyarat mutlak yang harus dimiliki oleh sebuah tim agar penerapan 'Shared Leadership' bisa berhasil adalah...",
+    options: [
+      "Semua anggota tim harus memiliki latar belakang pendidikan yang sama persis",
+      "Tingkat kepercayaan (trust) yang tinggi antar anggota dan adanya visi bersama yang jelas",
+      "Ruang kerja fisik yang sangat besar dan mewah",
+      "Sistem hukuman potong gaji yang ketat bagi yang berbuat salah"
+    ],
+    correct: 1,
+    explain: "Tanpa kepercayaan (trust) dan visi (goals) yang selaras, mendistribusikan wewenang justru akan menciptakan kekacauan dan anarki di dalam tim."
+  },
+  {
+    kb: 1,
+    q: "Dalam lingkungan Shared Leadership, apa peran utama dari pemimpin formal (misal: CEO atau Manajer Proyek)?",
+    options: [
+      "Menjadi diktator yang membatalkan semua keputusan tim secara sepihak",
+      "Fokus pada urusan administratif dan menjauhi tim",
+      "Bertindak sebagai fasilitator, pelatih (coach), dan penjaga budaya kerja yang memberdayakan timnya",
+      "Mengerjakan seluruh tugas teknis sendirian agar hasilnya sempurna"
+    ],
+    correct: 2,
+    explain: "Pemimpin formal tidak hilang, namun perannya bergeser dari 'pemberi perintah' menjadi 'fasilitator' yang menghilangkan hambatan kerja dan memberdayakan kapasitas timnya."
+  },
+  {
+    kb: 1,
+    q: "Konsep psikologis di mana anggota tim merasa aman untuk mengambil risiko, menyuarakan ide gila, atau mengakui kesalahan tanpa takut dihukum/dipermalukan disebut...",
+    options: [
+      "Psychological Safety (Keamanan Psikologis)",
+      "Toxic Positivity",
+      "Groupthink",
+      "Micromanagement"
+    ],
+    correct: 0,
+    explain: "Psychological Safety adalah fondasi inovasi. Anggota tim hanya berani mengambil peran kepemimpinan jika mereka tahu lingkungan kerjanya aman dari penghakiman saat mereka melakukan kesalahan eksplorasi."
+  },
+  {
+    kb: 1,
+    q: "Salah satu kelemahan atau risiko terbesar dari penerapan Shared Leadership jika tidak dikelola dengan baik adalah...",
+    options: [
+      "Inovasi produk yang terlalu cepat sehingga perusahaan kehabisan ide",
+      "Kebingungan peran, tumpang tindih tanggung jawab, dan lambatnya konsensus keputusan dalam situasi krisis kritis",
+      "Karyawan menjadi terlalu bahagia dan lupa bekerja",
+      "Perusahaan langsung bangkrut dalam hitungan hari"
+    ],
+    correct: 1,
+    explain: "Kelemahan utamanya adalah potensi konflik, perdebatan panjang tanpa ujung (kelumpuhan analisis), dan kebingungan soal siapa yang harus 'mengetuk palu' saat krisis darurat."
+  },
+  {
+    kb: 1,
+    q: "Istilah 'Empowerment' (Pemberdayaan) yang lekat dengan Shared Leadership berarti...",
+    options: [
+      "Membiarkan karyawan bekerja sesuka hati tanpa target apa pun",
+      "Mendelegasikan otonomi dan wewenang pengambilan keputusan kepada karyawan agar mereka mandiri menyelesaikan masalah",
+      "Menyuruh bawahan mengerjakan tugas pribadi atasan",
+      "Membebani karyawan dengan pekerjaan ganda tanpa kenaikan gaji"
+    ],
+    correct: 1,
+    explain: "Pemberdayaan adalah proses memberikan wewenang, alat, dan kepercayaan kepada anggota tim agar mereka bisa bertindak secara independen dan proaktif."
+  },
+  {
+    kb: 1,
+    q: "Gaya kepemimpinan yang berfokus pada melayani kebutuhan tim untuk mendorong pertumbuhan dan kesejahteraan mereka, yang sangat mendukung iklim Shared Leadership, disebut...",
+    options: [
+      "Transactional Leadership",
+      "Authoritarian Leadership",
+      "Servant Leadership (Kepemimpinan Melayani)",
+      "Laissez-faire Leadership"
+    ],
+    correct: 2,
+    explain: "Servant leader menempatkan kebutuhan bawahannya di atas kebutuhan dirinya sendiri. Mereka bertujuan mencetak pemimpin-pemimpin baru, bukan mencari pengikut yang patuh."
+  },
+  {
+    kb: 1,
+    q: "Pemanfaatan alat-alat kolaborasi digital (seperti Slack, Trello, Google Workspace) mendukung praktik Shared Leadership karena...",
+    options: [
+      "Memudahkan manajer untuk memata-matai isi pesan pribadi karyawan",
+      "Menciptakan transparansi informasi dan komunikasi yang lancar lintas divisi secara real-time",
+      "Menghambat karyawan untuk bekerja lebih dari jam 5 sore",
+      "Secara otomatis menghapus tugas yang belum selesai"
+    ],
+    correct: 1,
+    explain: "Alat kolaborasi meruntuhkan sekat informasi (silo). Transparansi data yang real-time memungkinkan siapa pun dalam tim mengambil keputusan cepat tanpa harus menunggu rapat direksi."
+  },
 
-    let currentQIndex = 0;
-    let score = 0;
+  // ===== KB2: Pembentukan Tim yang Efektif (11-20) =====
+  {
+    kb: 2,
+    q: "Menurut teori perkembangan kelompok Bruce Tuckman, fase di mana anggota tim mulai mengalami gesekan kepribadian, konflik ide, dan perebutan pengaruh disebut fase...",
+    options: [
+      "Forming",
+      "Storming (Pancaroba/Konflik)",
+      "Norming",
+      "Performing"
+    ],
+    correct: 1,
+    explain: "Fase Storming adalah masa kritis di mana perbedaan gaya kerja mulai berbenturan. Jika tim berhasil mengatasi fase ini, mereka akan masuk ke fase penormalan aturan (Norming)."
+  },
+  {
+    kb: 2,
+    q: "Dalam perusahaan digital modern, praktik kerja yang paling sering digunakan adalah 'Cross-functional Team' (Tim Lintas Fungsi). Maksudnya adalah...",
+    options: [
+      "Tim yang dibentuk dari karyawan yang memiliki tingkat pendidikan, jabatan, dan usia yang persis sama",
+      "Tim yang terdiri dari anggota dengan berbagai keahlian berbeda (misal: programmer, desainer, pemasar) yang disatukan untuk satu proyek",
+      "Tim yang bekerja melintasi batas negara yang berbeda namun mengerjakan tugas yang sama",
+      "Tim yang tugas utamanya memata-matai divisi lain"
+    ],
+    correct: 1,
+    explain: "Tim lintas fungsi menghilangkan birokrasi antar-departemen dengan menyatukan semua talenta yang dibutuhkan (Tech, UI/UX, Bisnis) ke dalam satu unit kerja (squad) yang otonom."
+  },
+  {
+    kb: 2,
+    q: "Tantangan paling utama yang dihadapi saat mengelola 'Virtual Team' (Tim yang bekerja secara *remote*/jarak jauh) adalah...",
+    options: [
+      "Membangun ikatan emosional, menjaga komunikasi agar tidak mispersepsi, dan memantau progres tanpa melakukan micromanagement",
+      "Kesulitan mencari karyawan yang memiliki laptop",
+      "Kewajiban menyediakan makan siang gratis bagi karyawan setiap hari",
+      "Tidak adanya teknologi untuk melakukan panggilan video di era sekarang"
+    ],
+    correct: 0,
+    explain: "Tanpa tatap muka fisik (water-cooler moments), membangun chemistry dan rasa percaya (trust) adalah hambatan terbesar dalam tim virtual, ditambah dengan perbedaan zona waktu."
+  },
+  {
+    kb: 2,
+    q: "Mengapa 'Diversity' (Keberagaman) latar belakang anggota tim sangat dianjurkan saat merintis usaha inovatif di era digital?",
+    options: [
+      "Hanya untuk memenuhi syarat hukum ketenagakerjaan dari pemerintah",
+      "Untuk menciptakan kebingungan agar kompetitor tidak bisa meniru",
+      "Karena keberagaman menghadirkan spektrum perspektif yang luas, mencegah 'Groupthink', dan memicu solusi pemecahan masalah yang lebih kaya",
+      "Agar perusahaan terlihat bagus di mata media saja"
+    ],
+    correct: 2,
+    explain: "Tim yang homogen (terlalu mirip pemikirannya) sering terjebak dalam 'Groupthink' (titik buta). Keberagaman ide memastikan produk dirancang lebih inklusif dan inovatif."
+  },
+  {
+    kb: 2,
+    q: "Metodologi pengelolaan tim 'Agile' sangat mengutamakan prinsip...",
+    options: [
+      "Mengikuti perencanaan awal secara kaku apa pun yang terjadi",
+      "Kelincahan, pengembangan produk secara bertahap (iteratif), dan responsif terhadap perubahan masukan (feedback) pengguna",
+      "Bekerja tanpa henti selama 24 jam sehari penuh",
+      "Penulisan dokumentasi teknis setebal mungkin sebelum bekerja"
+    ],
+    correct: 1,
+    explain: "Dalam manifesto Agile, merespons perubahan (responding to change) dihargai lebih tinggi daripada mengikuti rencana kaku (following a plan)."
+  },
+  {
+    kb: 2,
+    q: "Penyakit mematikan dalam sebuah organisasi di mana setiap departemen (misal: IT dan Marketing) menyembunyikan informasi, tidak mau berkolaborasi, dan bersaing secara tidak sehat disebut...",
+    options: [
+      "Silo Mentality (Mentalitas Silo)",
+      "Agile Methodology",
+      "Lean Startup",
+      "Cross-collaboration"
+    ],
+    correct: 0,
+    explain: "Mentalitas Silo terjadi ketika sebuah divisi mengisolasi dirinya seperti tabung beton penyimpan gandum (silo). Hal ini mematikan inovasi yang menuntut kolaborasi lintas fungsi."
+  },
+  {
+    kb: 2,
+    q: "Karakteristik anggota tim yang memiliki Emotional Intelligence (EQ) tinggi sangat krusial dalam tim digital karena mereka mampu...",
+    options: [
+      "Mengerjakan kode pemrograman lebih cepat dari AI",
+      "Memahami dan mengelola emosi diri sendiri, serta memiliki empati yang kuat terhadap rekan kerja saat berada di bawah tekanan tenggat waktu",
+      "Memanipulasi bos agar selalu memberikan promosi jabatan",
+      "Menolak semua kritik yang diberikan oleh pelanggan"
+    ],
+    correct: 1,
+    explain: "Hard skills (keahlian teknis) bisa dipelajari, namun EQ (empati, kesadaran diri, pengendalian stres) adalah perekat yang mencegah tim hancur berantakan saat dilanda tekanan krisis."
+  },
+  {
+    kb: 2,
+    q: "Praktik memberikan 'Feedback' (Umpan Balik) yang sehat dalam tim digital sebaiknya bersifat...",
+    options: [
+      "Hanya dilakukan satu kali setahun saat evaluasi gaji",
+      "Selalu memuji tanpa pernah memberikan kritik sama sekali",
+      "Berkelanjutan (continuous), konstruktif, dan berfokus pada perbaikan perilaku/kinerja, bukan menyerang karakter personal",
+      "Diberikan secara publik agar yang bersangkutan merasa malu dan jera"
+    ],
+    correct: 2,
+    explain: "Feedback yang efektif adalah feedback yang rutin, spesifik pada masalahnya (bukan orangnya), dan bertujuan untuk membangun (konstruktif), bukan untuk menjatuhkan harga diri."
+  },
+  {
+    kb: 2,
+    q: "Untuk memastikan keselarasan tim virtual yang tersebar di berbagai zona waktu, praktik komunikasi yang paling efisien adalah...",
+    options: [
+      "Memaksa semua orang rapat video call pada jam 2 pagi",
+      "Menerapkan komunikasi Asinkron (Asynchronous) yang didokumentasikan dengan baik, sehingga pesan dapat dibaca dan dibalas sesuai waktu kerja masing-masing",
+      "Menggunakan burung merpati pos",
+      "Tidak perlu berkomunikasi sama sekali asalkan tugas selesai"
+    ],
+    correct: 1,
+    explain: "Komunikasi Asinkron (misal: lewat email, dokumen tertulis, atau board Trello) mencegah kelelahan rapat (Zoom fatigue) dan menghargai perbedaan zona waktu anggota tim."
+  },
+  {
+    kb: 2,
+    q: "Dalam membentuk sebuah tim inti startup (Founding Team), komposisi klasik yang sering disarankan oleh investor mencakup peran...",
+    options: [
+      "Tiga orang ahli hukum perpajakan",
+      "Hacker (Teknis/Produk), Hustler (Bisnis/Pemasaran), dan Hipster (Desain/UX)",
+      "Semuanya harus berlatar belakang akuntansi murni",
+      "Satu orang bos dan sisanya adalah pekerja magang"
+    ],
+    correct: 1,
+    explain: "Trio 'Hacker, Hustler, Hipster' adalah fondasi ideal. Hacker membangun teknologinya, Hipster memastikan pengalaman penggunanya indah, dan Hustler memastikan produknya terjual dan menghasilkan uang."
+  }
+];
 
-    function loadQuestion() {
-        const q = questions[currentQIndex];
-        document.getElementById('question-text').innerText = (currentQIndex + 1) + ". " + q.question;
-        const optionsArea = document.getElementById('options-area');
-        optionsArea.innerHTML = '';
-        document.getElementById('feedback-area').style.display = 'none';
-        document.getElementById('next-btn').style.display = 'none';
+let current = 0;
+let score = 0;
+let locked = false;
+const answers = new Array(questions.length).fill(null); 
 
-        q.options.forEach((opt, index) => {
-            const li = document.createElement('li');
-            const btn = document.createElement('button');
-            btn.innerText = opt.text;
-            btn.onclick = () => checkAnswer(index, btn);
-            li.appendChild(btn);
-            optionsArea.appendChild(li);
-        });
+const progressTrack = document.getElementById('progressTrack');
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const qMeta = document.getElementById('qMeta');
+const qText = document.getElementById('qText');
+const optionsContainer = document.getElementById('optionsContainer');
+const explainBox = document.getElementById('explainBox');
+const nextBtn = document.getElementById('nextBtn');
+const quizCard = document.getElementById('quizCard');
+const resultCard = document.getElementById('resultCard');
+
+function buildProgress(){
+  progressTrack.innerHTML = '';
+  questions.forEach((_, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'progress-bar';
+    const h = 30 + (i / (questions.length - 1)) * 70;
+    bar.style.height = h + '%';
+    progressTrack.appendChild(bar);
+  });
+}
+
+function refreshProgress(){
+  const bars = progressTrack.children;
+  for(let i=0;i<bars.length;i++){
+    bars[i].classList.remove('current','correct','wrong');
+    if(answers[i] === 'correct') bars[i].classList.add('correct');
+    else if(answers[i] === 'wrong') bars[i].classList.add('wrong');
+    else if(i === current) bars[i].classList.add('current');
+  }
+  progressText.textContent = `Soal ${current+1} dari ${questions.length}`;
+  scoreText.textContent = `Skor: ${score}`;
+}
+
+function renderQuestion(){
+  locked = false;
+  const item = questions[current];
+  qMeta.textContent = `Kegiatan Belajar ${item.kb}`;
+  qText.textContent = item.q;
+  optionsContainer.innerHTML = '';
+  explainBox.classList.remove('show');
+  explainBox.innerHTML = '';
+  nextBtn.classList.remove('show');
+  nextBtn.textContent = current === questions.length - 1 ? 'Lihat Hasil →' : 'Lanjut →';
+
+  item.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="tag">${String.fromCharCode(65+idx)}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => selectOption(idx, btn));
+    optionsContainer.appendChild(btn);
+  });
+
+  refreshProgress();
+}
+
+function selectOption(idx, btnEl){
+  if(locked) return;
+  locked = true;
+  const item = questions[current];
+  const allBtns = optionsContainer.querySelectorAll('.option');
+  allBtns.forEach(b => b.classList.add('locked'));
+
+  if(idx === item.correct){
+    btnEl.classList.add('correct');
+    answers[current] = 'correct';
+    score++;
+  } else {
+    btnEl.classList.add('wrong');
+    allBtns[item.correct].classList.add('correct');
+    answers[current] = 'wrong';
+  }
+
+  explainBox.innerHTML = `<strong>${idx === item.correct ? 'Benar.' : 'Kurang tepat.'}</strong> ${item.explain}`;
+  explainBox.classList.add('show');
+  nextBtn.classList.add('show');
+  refreshProgress();
+}
+
+nextBtn.addEventListener('click', () => {
+  if(current < questions.length - 1){
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  quizCard.style.display = 'none';
+  resultCard.classList.add('show');
+
+  document.getElementById('finalScore').textContent = `${score}/${questions.length}`;
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('finalPercent').textContent = `${pct}% jawaban benar`;
+
+  let kb1 = 0, kb2 = 0;
+  questions.forEach((q, i) => {
+    if(answers[i] === 'correct'){
+      if(q.kb === 1) kb1++; else kb2++;
     }
+  });
+  document.getElementById('kb1Score').textContent = `${kb1}/10`;
+  document.getElementById('kb2Score').textContent = `${kb2}/10`;
 
-    function checkAnswer(selectedIndex, btn) {
-        const q = questions[currentQIndex];
-        const isCorrect = q.options[selectedIndex].correct;
-        const buttons = document.querySelectorAll('.options button');
-        
-        buttons.forEach(b => b.disabled = true);
+  let title, desc;
+  if(score >= 18){
+    title = 'Master Kepemimpinan Tim';
+    desc = 'Sempurna! Anda sangat menguasai dinamika *Shared Leadership* dan seni membangun tim lintas fungsi yang tangkas.';
+  } else if(score >= 14){
+    title = 'Katalisator Tim Handal';
+    desc = 'Bagus sekali! Pemahaman Anda terkait pengelolaan *Virtual Team* dan budaya kolaborasi sudah sangat baik.';
+  } else if(score >= 10){
+    title = 'Potensi *Groupthink*';
+    desc = 'Pemahaman Anda masih terpaku pada kepemimpinan konvensional (top-down). Tinjau lagi materi *Psychological Safety* dan dinamika fase *Storming*.';
+  } else {
+    title = 'Kembali Konsolidasi';
+    desc = 'Jangan menyerah! Silakan pelajari kembali pentingnya *Agile* dan komunikasi asinkron sebelum mencoba lagi.';
+  }
+  document.getElementById('verdictTitle').textContent = title;
+  document.getElementById('verdictDesc').textContent = desc;
+}
 
-        if (isCorrect) {
-            btn.classList.add('btn-correct');
-            score++;
-            showFeedback("Benar! " + q.options[selectedIndex].rationale, "correct");
-        } else {
-            btn.classList.add('btn-wrong');
-            const correctIndex = q.options.findIndex(o => o.correct);
-            buttons[correctIndex].classList.add('btn-correct');
-            showFeedback("Salah. " + q.options[selectedIndex].rationale, "wrong");
-        }
-        document.getElementById('next-btn').style.display = 'block';
-    }
+document.getElementById('retryBtn').addEventListener('click', () => {
+  current = 0; score = 0; answers.fill(null);
+  resultCard.classList.remove('show');
+  quizCard.style.display = 'block';
+  renderQuestion();
+});
 
-    function showFeedback(text, type) {
-        const fb = document.getElementById('feedback-area');
-        fb.innerText = text;
-        fb.className = 'feedback ' + type;
-        fb.style.display = 'block';
-    }
-
-    function nextQuestion() {
-        currentQIndex++;
-        if (currentQIndex < questions.length) {
-            loadQuestion();
-        } else {
-            document.getElementById('quiz-area').style.display = 'none';
-            document.getElementById('score-area').style.display = 'block';
-            document.getElementById('final-score').innerText = "Skor Anda: " + score + " / " + questions.length;
-        }
-    }
-
-    loadQuestion();
+buildProgress();
+renderQuestion();
 </script>
-
 </body>
 </html>

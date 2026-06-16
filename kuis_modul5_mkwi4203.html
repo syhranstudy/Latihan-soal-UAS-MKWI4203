@@ -1,157 +1,658 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis MKWI4203 - Modul 5</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
-        .quiz-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #2c3e50; }
-        .question { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
-        .options { list-style-type: none; padding: 0; }
-        .options li { margin-bottom: 10px; }
-        .options button { width: 100%; padding: 15px; text-align: left; background: #e9ecef; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 1em; transition: 0.3s; }
-        .options button:hover { background: #dce1e6; }
-        .options button:disabled { cursor: not-allowed; }
-        .btn-correct { background: #d4edda !important; border-color: #c3e6cb !important; color: #155724; }
-        .btn-wrong { background: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24; }
-        .feedback { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
-        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .next-btn { display: none; width: 100%; padding: 15px; margin-top: 20px; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
-        .next-btn:hover { background: #0056b3; }
-        .score-container { text-align: center; display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Modul 5 — Kewirausahaan di Era Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14172B;
+    --surface: #1C2046;
+    --surface-2: #262B56;
+    --accent-amber: #F2A93B;
+    --accent-teal: #4FD1C5;
+    --accent-coral: #FF6B6B;
+    --text-primary: #F5F3EE;
+    --text-muted: #9CA3C4;
+    --border: rgba(245,243,238,0.10);
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: radial-gradient(circle at 20% -10%, #232958 0%, var(--bg) 55%);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding: 32px 16px 64px;
+  }
+
+  .app{ width:100%; max-width: 640px; }
+
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-amber);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+
+  h1{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 5vw, 28px);
+    font-weight: 700;
+    margin: 0 0 18px;
+    line-height: 1.25;
+  }
+
+  .progress-track{
+    display:flex;
+    align-items:flex-end;
+    gap: 3px;
+    height: 36px;
+    margin-bottom: 8px;
+  }
+  .progress-bar{
+    flex:1;
+    background: var(--border);
+    border-radius: 3px 3px 0 0;
+    transition: background .35s ease, transform .35s ease;
+    transform-origin: bottom;
+  }
+  .progress-bar.current{ background: var(--accent-amber); }
+  .progress-bar.correct{ background: var(--accent-teal); }
+  .progress-bar.wrong{ background: var(--accent-coral); }
+
+  .progress-label{
+    display:flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+  .progress-label span:last-child{ font-weight:600; color: var(--text-primary); }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+  }
+
+  .q-meta{
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .q-text{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 22px;
+  }
+
+  .options{ display:flex; flex-direction:column; gap: 10px; }
+
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap: 12px;
+    text-align:left;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, transform .15s ease;
+  }
+  .option:hover:not(.locked){ border-color: var(--accent-amber); transform: translateY(-1px); }
+  .option:focus-visible{ outline: 2px solid var(--accent-amber); outline-offset: 2px; }
+
+  .option .tag{
+    flex-shrink:0;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: rgba(245,243,238,0.08);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .option.correct{ border-color: var(--accent-teal); background: rgba(79,209,197,0.12); }
+  .option.correct .tag{ background: var(--accent-teal); color: #0B2421; }
+  .option.wrong{ border-color: var(--accent-coral); background: rgba(255,107,107,0.10); }
+  .option.wrong .tag{ background: var(--accent-coral); color: #2B0B0B; }
+  .option.locked:not(.correct):not(.wrong){ opacity: 0.45; }
+
+  .explain{
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent-amber);
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    display:none;
+  }
+  .explain.show{ display:block; }
+  .explain strong{ color: var(--text-primary); }
+
+  .next-btn{
+    margin-top: 22px;
+    width:100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: var(--accent-amber);
+    color: #2B1B00;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor:pointer;
+    display:none;
+    transition: filter .2s ease;
+  }
+  .next-btn.show{ display:block; }
+  .next-btn:hover{ filter: brightness(1.08); }
+
+  /* Result screen */
+  .result{ display:none; text-align:center; }
+  .result.show{ display:block; }
+  .result .score-num{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 64px;
+    font-weight: 700;
+    margin: 6px 0 2px;
+    background: linear-gradient(135deg, var(--accent-amber), var(--accent-teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .result .score-sub{ color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+  .result .verdict{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .result .verdict-desc{
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 440px;
+    margin-left:auto; margin-right:auto;
+  }
+  .breakdown{
+    display:flex; gap:12px; margin-bottom:24px;
+  }
+  .breakdown .b-item{
+    flex:1; background: var(--surface-2); border-radius: 14px; padding: 14px;
+    border: 1px solid var(--border);
+  }
+  .breakdown .b-num{ font-family:'Space Grotesk', sans-serif; font-size:22px; font-weight:700; }
+  .breakdown .b-label{ font-size: 12px; color: var(--text-muted); margin-top:4px; }
+
+  .retry-btn{
+    padding: 14px 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor:pointer;
+    transition: border-color .2s ease;
+  }
+  .retry-btn:hover{ border-color: var(--accent-amber); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
 </head>
 <body>
 
-<div class="quiz-container">
-    <h2>Latihan Soal Modul 5:<br>Memahami Konsumen di Era Digital</h2>
-    <div id="quiz-area">
-        <div id="question-text" class="question">Memuat pertanyaan...</div>
-        <ul id="options-area" class="options"></ul>
-        <div id="feedback-area" class="feedback"></div>
-        <button id="next-btn" class="next-btn" onclick="nextQuestion()">Pertanyaan Selanjutnya</button>
+<div class="app">
+  <p class="eyebrow">MKWI4203 · Kewirausahaan di Era Digital</p>
+  <h1>Modul 5 — Memahami Konsumen di Era Digital</h1>
+
+  <div class="progress-track" id="progressTrack"></div>
+  <div class="progress-label">
+    <span id="progressText">Soal 1 dari 20</span>
+    <span id="scoreText">Skor: 0</span>
+  </div>
+
+  <div class="card" id="quizCard">
+    <p class="q-meta" id="qMeta">Kegiatan Belajar 1</p>
+    <p class="q-text" id="qText"></p>
+    <div class="options" id="optionsContainer"></div>
+    <div class="explain" id="explainBox"></div>
+    <button class="next-btn" id="nextBtn">Lanjut →</button>
+  </div>
+
+  <div class="card result" id="resultCard">
+    <p class="eyebrow" style="text-align:center;">Hasil Modul 5</p>
+    <div class="score-num" id="finalScore">0/20</div>
+    <p class="score-sub" id="finalPercent">0%</p>
+    <p class="verdict" id="verdictTitle"></p>
+    <p class="verdict-desc" id="verdictDesc"></p>
+    <div class="breakdown">
+      <div class="b-item">
+        <div class="b-num" id="kb1Score">0/10</div>
+        <div class="b-label">KB1 · Karakteristik Konsumen Digital</div>
+      </div>
+      <div class="b-item">
+        <div class="b-num" id="kb2Score">0/10</div>
+        <div class="b-label">KB2 · Strategi Pendekatan Konsumen</div>
+      </div>
     </div>
-    <div id="score-area" class="score-container">
-        <h3 id="final-score"></h3>
-        <button class="next-btn" style="display:block;" onclick="location.reload()">Ulangi Kuis</button>
-    </div>
+    <button class="retry-btn" id="retryBtn">Ulangi Kuis Modul 5</button>
+  </div>
 </div>
 
 <script>
-    const questions = [
-        {
-            question: "Karakteristik utama yang membedakan konsumen digital dari konsumen tradisional adalah...",
-            options: [
-                { text: "Ketergantungan tinggi pada tenaga penjual di toko", correct: false, rationale: "Konsumen digital lebih mandiri dalam mencari informasi." },
-                { text: "Cenderung mencari informasi dan membandingkan ulasan (review) secara online sebelum membeli", correct: true, rationale: "Akses informasi yang luas membuat konsumen digital sangat bergantung pada ulasan pengguna lain (social proof)." },
-                { text: "Sangat loyal pada satu merek dan tidak mau mencoba merek baru", correct: false, rationale: "Konsumen digital cenderung lebih mudah beralih merek jika ada penawaran yang lebih baik." },
-                { text: "Menghindari penggunaan perangkat seluler untuk bertransaksi", correct: false, rationale: "Justru transaksi via perangkat seluler (mobile commerce) adalah ciri utamanya." }
-            ]
-        },
-        {
-            question: "Dalam model 5A Customer Path (Jalur Pelanggan) yang dicetuskan Philip Kotler, tahap di mana pelanggan merekomendasikan merek kepada orang lain disebut...",
-            options: [
-                { text: "Aware (Sadar)", correct: false, rationale: "Aware adalah tahap awal mengetahui keberadaan merek." },
-                { text: "Appeal (Tertarik)", correct: false, rationale: "Appeal adalah tahap di mana pelanggan mulai merasa tertarik." },
-                { text: "Act (Bertindak)", correct: false, rationale: "Act adalah tindakan pembelian atau penggunaan." },
-                { text: "Advocate (Menganjurkan)", correct: true, rationale: "Advocate adalah puncak loyalitas di mana pelanggan secara sukarela membela dan merekomendasikan produk." }
-            ]
-        },
-        {
-            question: "Fenomena di mana pelanggan melihat-lihat barang secara fisik di toko konvensional, namun akhirnya membelinya secara online untuk mendapat harga lebih murah disebut...",
-            options: [
-                { text: "Showrooming", correct: true, rationale: "Toko fisik hanya dijadikan 'showroom' pameran, sementara transaksi dilakukan di platform digital." },
-                { text: "Webrooming", correct: false, rationale: "Webrooming adalah kebalikannya: riset online lalu beli di toko fisik." },
-                { text: "Dropshipping", correct: false, rationale: "Dropshipping adalah model bisnis ritel tanpa menyetok barang." },
-                { text: "Crowdsourcing", correct: false, rationale: "Pengumpulan ide atau dana dari banyak orang secara online." }
-            ]
-        },
-        {
-            question: "Pendekatan pemasaran yang memberikan pengalaman berbelanja yang mulus dan terintegrasi di berbagai saluran (toko fisik, aplikasi, website) disebut strategi...",
-            options: [
-                { text: "Single-channel", correct: false, rationale: "Hanya menggunakan satu saluran penjualan." },
-                { text: "Multi-channel", correct: false, rationale: "Menggunakan banyak saluran, tetapi saluran tersebut tidak terhubung satu sama lain." },
-                { text: "Omnichannel", correct: true, rationale: "Omnichannel memastikan integrasi data pelanggan sehingga perpindahan dari belanja online ke offline terasa tanpa hambatan." },
-                { text: "Micro-marketing", correct: false, rationale: "Pemasaran yang ditargetkan pada individu atau kelompok sangat kecil." }
-            ]
-        },
-        {
-            question: "Mengapa 'Personalisasi' menjadi tuntutan utama dari konsumen di era digital?",
-            options: [
-                { text: "Karena mereka ingin semua data pribadi mereka disebarluaskan", correct: false, rationale: "Konsumen tetap peduli pada privasi, mereka hanya ingin penawaran yang relevan." },
-                { text: "Karena konsumen merasa kebanjiran informasi dan hanya ingin melihat konten atau rekomendasi yang relevan dengan kebutuhan spesifik mereka", correct: true, rationale: "Personalisasi memotong kebisingan informasi dan memberikan solusi yang tepat sasaran menggunakan data analitik." },
-                { text: "Karena personalisasi menurunkan harga barang secara otomatis", correct: false, rationale: "Personalisasi tidak berhubungan langsung dengan penurunan harga barang." },
-                { text: "Karena sistem digital tidak bisa memproses penjualan tanpa personalisasi", correct: false, rationale: "Sistem tetap bisa memproses penjualan massal, namun kurang efektif." }
-            ]
-        }
-    ];
+const questions = [
+  // ===== KB1: Karakteristik Konsumen Digital (1-10) =====
+  {
+    kb: 1,
+    q: "Karakteristik utama yang paling membedakan konsumen digital dari konsumen konvensional adalah...",
+    options: [
+      "Ketergantungan absolut pada penjual fisik untuk mendapatkan informasi",
+      "Konektivitas tinggi dan akses informasi yang luas untuk mengambil keputusan",
+      "Sangat setia pada satu merek tanpa memedulikan kompetitor",
+      "Menghindari penggunaan perangkat seluler (mobile) dalam bertransaksi"
+    ],
+    correct: 1,
+    explain: "Konsumen digital selalu terhubung (connected) dan sangat mandiri dalam mencari informasi serta membandingkan produk secara online sebelum memutuskan untuk membeli."
+  },
+  {
+    kb: 1,
+    q: "Dalam perilaku belanja modern, fenomena di mana pelanggan melihat-lihat barang secara fisik di toko, namun akhirnya membeli secara online untuk mendapat harga lebih murah disebut...",
+    options: [
+      "Webrooming",
+      "Dropshipping",
+      "Showrooming",
+      "Crowdsourcing"
+    ],
+    correct: 2,
+    explain: "Showrooming menjadikan toko fisik sekadar 'ruang pamer' (showroom), sementara transaksi eksekusinya dilakukan di platform e-commerce demi harga yang lebih kompetitif."
+  },
+  {
+    kb: 1,
+    q: "Kebalikan dari Showrooming, fenomena di mana pelanggan meriset spesifikasi produk di internet lalu membelinya secara langsung di toko fisik disebut...",
+    options: [
+      "Webrooming",
+      "Retargeting",
+      "Phishing",
+      "Social Commerce"
+    ],
+    correct: 0,
+    explain: "Webrooming terjadi ketika pelanggan mencari ulasan dan membandingkan harga di internet (web), lalu pergi ke toko fisik untuk membeli barang agar bisa langsung dibawa pulang."
+  },
+  {
+    kb: 1,
+    q: "Konsep 'Zero Moment of Truth' (ZMOT) yang digagas oleh Google merujuk pada tahap ketika konsumen...",
+    options: [
+      "Membuka kemasan produk untuk pertama kalinya",
+      "Melakukan riset online secara mandiri sebelum berinteraksi langsung dengan merek",
+      "Membuang produk yang sudah tidak terpakai",
+      "Melakukan komplain kepada layanan pelanggan (customer service)"
+    ],
+    correct: 1,
+    explain: "ZMOT adalah momen kritis di mana konsumen mencari ulasan, membaca blog, atau menonton video YouTube tentang sebuah produk *sebelum* mereka benar-benar pergi ke toko atau mengklik tombol beli."
+  },
+  {
+    kb: 1,
+    q: "Peran 'Social Proof' (Bukti Sosial) sangat krusial bagi konsumen digital. Contoh paling umum dari Social Proof adalah...",
+    options: [
+      "Iklan baliho raksasa di jalan tol",
+      "Ulasan (rating/review) dari pembeli lain di kolom komentar e-commerce",
+      "Sertifikat pendaftaran perusahaan dari kementerian",
+      "Diskon potongan harga akhir tahun"
+    ],
+    correct: 1,
+    explain: "Konsumen digital lebih memercayai opini, rating, dan ulasan sesama pengguna (user-generated content) dibandingkan dengan klaim iklan dari perusahaan itu sendiri."
+  },
+  {
+    kb: 1,
+    q: "Mengapa tingkat 'Loyalitas Merek' (Brand Loyalty) pada konsumen digital cenderung lebih rendah dibandingkan konsumen era masa lalu?",
+    options: [
+      "Karena tidak ada produk yang berkualitas di era digital",
+      "Karena konsumen dibatasi haknya oleh pemerintah untuk berpindah merek",
+      "Karena banyaknya opsi substitusi (pengganti) dan mudahnya membandingkan penawaran antar kompetitor hanya dengan sekali klik",
+      "Karena merek digital tidak pernah memberikan diskon"
+    ],
+    correct: 2,
+    explain: "Dengan biaya peralihan (switching cost) yang hampir nol dan akses ke ribuan pilihan di internet, konsumen digital tidak ragu untuk berpindah merek jika menemukan nilai yang lebih baik di tempat lain."
+  },
+  {
+    kb: 1,
+    q: "Istilah 'Prosumer' muncul di era digital untuk menggambarkan konsumen yang...",
+    options: [
+      "Hanya membeli produk impor berharga premium",
+      "Bersikap pasif dan menerima produk apa adanya",
+      "Berperan ganda sebagai konsumen (consumer) sekaligus ikut berpartisipasi/memproduksi (producer) ide, ulasan, atau konten produk",
+      "Menolak semua bentuk inovasi teknologi"
+    ],
+    correct: 2,
+    explain: "Prosumer (Producer + Consumer) adalah konsumen aktif yang tidak hanya membeli, tetapi ikut menyumbang gagasan produk baru, membuat video unboxing, atau merekomendasikan produk."
+  },
+  {
+    kb: 1,
+    q: "Tingginya paparan informasi di media sosial kerap memicu kecemasan psikologis pada konsumen digital apabila mereka tertinggal tren. Fenomena ini disebut...",
+    options: [
+      "VUCA (Volatility, Uncertainty, Complexity, Ambiguity)",
+      "FOMO (Fear Of Missing Out)",
+      "JOMO (Joy Of Missing Out)",
+      "B2B (Business to Business)"
+    ],
+    correct: 1,
+    explain: "FOMO sering dieksploitasi oleh pemasar digital melalui taktik seperti 'Flash Sale' atau 'Stok Terbatas' karena konsumen takut kehilangan kesempatan atau tertinggal tren."
+  },
+  {
+    kb: 1,
+    q: "Salah satu tuntutan paling dominan dari konsumen digital terhadap sebuah merek adalah 'Personalisasi'. Maksudnya adalah...",
+    options: [
+      "Konsumen ingin seluruh identitas pribadinya disebar luaskan di internet",
+      "Perusahaan hanya memproduksi satu jenis barang untuk semua orang secara global",
+      "Konsumen mengharapkan pengalaman, rekomendasi, dan penawaran yang relevan dengan kebiasaan dan preferensi spesifik mereka",
+      "Konsumen menuntut merek untuk membagikan saham perusahaannya kepada mereka"
+    ],
+    correct: 2,
+    explain: "Personalisasi berarti merek mampu 'mengenali' konsumen lewat data analitik (misalnya: algoritma rekomendasi Netflix atau Spotify) sehingga pengalaman berbelanja terasa khusus untuk individu tersebut."
+  },
+  {
+    kb: 1,
+    q: "Faktor yang paling cepat menghancurkan reputasi merek di mata konsumen digital, yang efeknya bisa menyebar dalam hitungan jam, adalah...",
+    options: [
+      "Mengganti logo perusahaan",
+      "Buruknya pelayanan pelanggan yang diviralkan melalui tangkapan layar (screenshot) di media sosial",
+      "Kenaikan harga produk sebesar dua persen",
+      "Mengubah kemasan produk menjadi ramah lingkungan"
+    ],
+    correct: 1,
+    explain: "Era media sosial memberi kekuatan pada konsumen untuk memviralkan pengalaman buruk. Satu keluhan viral dapat dengan cepat meruntuhkan kepercayaan ratusan ribu calon pembeli lainnya."
+  },
 
-    let currentQIndex = 0;
-    let score = 0;
+  // ===== KB2: Strategi Pendekatan Konsumen (11-20) =====
+  {
+    kb: 2,
+    q: "Model jalur pelanggan '5A Customer Path' yang dikembangkan oleh Philip Kotler terdiri dari langkah-langkah...",
+    options: [
+      "Aware, Appeal, Ask, Act, Advocate",
+      "Aware, Analyze, Acquire, Adapt, Abandon",
+      "Attention, Action, Attitude, Activity, Advance",
+      "Assess, Accept, Act, Align, Authorize"
+    ],
+    correct: 0,
+    explain: "5A Customer Path Kotler adalah: Aware (Sadar), Appeal (Tertarik), Ask (Mencari tahu), Act (Bertindak/Beli), dan Advocate (Menganjurkan)."
+  },
+  {
+    kb: 2,
+    q: "Dalam model 5A, tahap di mana calon pembeli mulai mencari ulasan online, menelepon call center, atau bertanya kepada teman terkait suatu merek berada pada fase...",
+    options: [
+      "Aware",
+      "Act",
+      "Ask",
+      "Advocate"
+    ],
+    correct: 2,
+    explain: "Fase 'Ask' terjadi ketika konsumen yang sudah tertarik (Appeal) melakukan riset mendalam dan memvalidasi ketertarikannya melalui berbagai saluran pencarian informasi."
+  },
+  {
+    kb: 2,
+    q: "Fase tertinggi dan paling diharapkan oleh wirausaha dalam 5A Customer Path adalah 'Advocate', di mana pelanggan...",
+    options: [
+      "Membeli produk untuk pertama kalinya",
+      "Melihat iklan produk di televisi",
+      "Membatalkan pesanannya karena kecewa",
+      "Menjadi pembela merek yang secara sukarela merekomendasikan produk tersebut kepada jejaringnya"
+    ],
+    correct: 3,
+    explain: "Advocate adalah puncak loyalitas. Pelanggan tidak hanya setia, tetapi bertindak sebagai tenaga pemasar gratis dengan merekomendasikan merek dari mulut ke mulut."
+  },
+  {
+    kb: 2,
+    q: "Strategi pemasaran yang memberikan pengalaman berbelanja yang mulus (seamless) dan terintegrasi penuh di berbagai titik sentuh (toko fisik, website, aplikasi) disebut strategi...",
+    options: [
+      "Single-channel",
+      "Multichannel",
+      "Omnichannel",
+      "Micro-channel"
+    ],
+    correct: 2,
+    explain: "Omnichannel memastikan bahwa data pelanggan terhubung di semua platform. Misalnya, pelanggan memasukkan barang di keranjang website, dan notifikasinya bisa muncul di aplikasi *smartphone* mereka."
+  },
+  {
+    kb: 2,
+    q: "Perbedaan utama antara Multichannel dan Omnichannel terletak pada...",
+    options: [
+      "Jumlah platform yang digunakan; Multichannel lebih banyak daripada Omnichannel",
+      "Multichannel menggunakan jalur offline, sedangkan Omnichannel 100% online",
+      "Multichannel beroperasi secara terpisah (silo) di tiap saluran, sedangkan Omnichannel terintegrasi secara terpusat (seamless)",
+      "Multichannel hanya untuk perusahaan B2B, Omnichannel untuk B2C"
+    ],
+    correct: 2,
+    explain: "Multichannel menggunakan banyak saluran namun sistemnya tidak saling bicara. Omnichannel menyatukan semua saluran itu menjadi satu ekosistem pengalaman pelanggan yang utuh."
+  },
+  {
+    kb: 2,
+    q: "Pemanfaatan User-Generated Content (UGC) merupakan strategi cerdas di era digital. Manakah contoh penerapan UGC?",
+    options: [
+      "Perusahaan menyewa agensi periklanan untuk membuat video komersial",
+      "Perusahaan menggunakan foto-foto estetik hasil jepretan pelanggan asli untuk diposting ulang (repost) di akun resmi Instagram merek",
+      "Perusahaan mencetak pamflet untuk dibagikan di pinggir jalan",
+      "Perusahaan menulis rilis pers ke media koran nasional"
+    ],
+    correct: 1,
+    explain: "UGC adalah konten (foto, video, ulasan) yang murni dibuat oleh konsumen. Memanfaatkan UGC sangat efektif karena terlihat lebih otentik dan membangun Social Proof."
+  },
+  {
+    kb: 2,
+    q: "Taktik pemasaran digital di mana iklan dari produk yang sempat dilihat oleh konsumen di sebuah website terus 'mengikutinya' saat ia membuka website atau platform lain disebut...",
+    options: [
+      "Retargeting / Remarketing",
+      "Email Spamming",
+      "Cold Calling",
+      "Search Engine Optimization"
+    ],
+    correct: 0,
+    explain: "Retargeting menggunakan *cookies* browser untuk melacak pengguna yang belum melakukan pembelian dan menargetkan mereka ulang dengan iklan untuk mendorong konversi."
+  },
+  {
+    kb: 2,
+    q: "Implementasi perangkat lunak Customer Relationship Management (CRM) sangat vital untuk memahami konsumen karena...",
+    options: [
+      "CRM mampu memotong pajak penjualan perusahaan",
+      "CRM merekam histori interaksi, pembelian, dan keluhan setiap pelanggan secara terpusat untuk keperluan personalisasi layanan",
+      "CRM otomatis menghapus data pelanggan yang tidak aktif",
+      "CRM menggantikan peran direktur pemasaran"
+    ],
+    correct: 1,
+    explain: "Sistem CRM membantu bisnis menyimpan dan menganalisis database pelanggan untuk merancang kampanye promosi yang sangat relevan dan meningkatkan kepuasan pelanggan."
+  },
+  {
+    kb: 2,
+    q: "Tujuan utama dari strategi 'Content Marketing' (Pemasaran Konten) dalam mendekati konsumen digital adalah...",
+    options: [
+      "Mendesak konsumen dengan strategi hard-selling agar membeli hari itu juga",
+      "Membangun otoritas merek dan kepercayaan dengan menyediakan informasi atau hiburan yang bermanfaat bagi target audiens secara konsisten",
+      "Menjelek-jelekkan produk kompetitor di artikel blog",
+      "Mendapatkan likes sebanyak-banyaknya tanpa peduli penjualan jangka panjang"
+    ],
+    correct: 1,
+    explain: "Content marketing bersifat *soft-selling*. Alih-alih menyuruh beli, strategi ini mengedukasi atau menghibur konsumen terlebih dahulu hingga mereka secara alami percaya dan loyal pada merek."
+  },
+  {
+    kb: 2,
+    q: "Pendekatan melayani konsumen digital yang mengombinasikan kecepatan kecerdasan buatan (Chatbot) dengan empati tenaga manusia (Live Agent) bertujuan untuk...",
+    options: [
+      "Menghilangkan pekerjaan seluruh tim Customer Service",
+      "Menyelesaikan pertanyaan rutin secara instan (24/7) melalui bot, sambil memastikan masalah yang kompleks tetap ditangani secara personal oleh manusia",
+      "Membuat pelanggan merasa frustrasi berhadapan dengan mesin terus-menerus",
+      "Menunda balasan hingga jam kerja operasional kantor buka"
+    ],
+    correct: 1,
+    explain: "Pendekatan *hybrid* ini memuaskan tuntutan konsumen akan kecepatan (via Chatbot) tanpa mengorbankan kualitas penanganan masalah rumit yang butuh empati emosional (via tenaga manusia)."
+  }
+];
 
-    function loadQuestion() {
-        const q = questions[currentQIndex];
-        document.getElementById('question-text').innerText = (currentQIndex + 1) + ". " + q.question;
-        const optionsArea = document.getElementById('options-area');
-        optionsArea.innerHTML = '';
-        document.getElementById('feedback-area').style.display = 'none';
-        document.getElementById('next-btn').style.display = 'none';
+let current = 0;
+let score = 0;
+let locked = false;
+const answers = new Array(questions.length).fill(null); 
 
-        q.options.forEach((opt, index) => {
-            const li = document.createElement('li');
-            const btn = document.createElement('button');
-            btn.innerText = opt.text;
-            btn.onclick = () => checkAnswer(index, btn);
-            li.appendChild(btn);
-            optionsArea.appendChild(li);
-        });
+const progressTrack = document.getElementById('progressTrack');
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const qMeta = document.getElementById('qMeta');
+const qText = document.getElementById('qText');
+const optionsContainer = document.getElementById('optionsContainer');
+const explainBox = document.getElementById('explainBox');
+const nextBtn = document.getElementById('nextBtn');
+const quizCard = document.getElementById('quizCard');
+const resultCard = document.getElementById('resultCard');
+
+function buildProgress(){
+  progressTrack.innerHTML = '';
+  questions.forEach((_, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'progress-bar';
+    const h = 30 + (i / (questions.length - 1)) * 70;
+    bar.style.height = h + '%';
+    progressTrack.appendChild(bar);
+  });
+}
+
+function refreshProgress(){
+  const bars = progressTrack.children;
+  for(let i=0;i<bars.length;i++){
+    bars[i].classList.remove('current','correct','wrong');
+    if(answers[i] === 'correct') bars[i].classList.add('correct');
+    else if(answers[i] === 'wrong') bars[i].classList.add('wrong');
+    else if(i === current) bars[i].classList.add('current');
+  }
+  progressText.textContent = `Soal ${current+1} dari ${questions.length}`;
+  scoreText.textContent = `Skor: ${score}`;
+}
+
+function renderQuestion(){
+  locked = false;
+  const item = questions[current];
+  qMeta.textContent = `Kegiatan Belajar ${item.kb}`;
+  qText.textContent = item.q;
+  optionsContainer.innerHTML = '';
+  explainBox.classList.remove('show');
+  explainBox.innerHTML = '';
+  nextBtn.classList.remove('show');
+  nextBtn.textContent = current === questions.length - 1 ? 'Lihat Hasil →' : 'Lanjut →';
+
+  item.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="tag">${String.fromCharCode(65+idx)}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => selectOption(idx, btn));
+    optionsContainer.appendChild(btn);
+  });
+
+  refreshProgress();
+}
+
+function selectOption(idx, btnEl){
+  if(locked) return;
+  locked = true;
+  const item = questions[current];
+  const allBtns = optionsContainer.querySelectorAll('.option');
+  allBtns.forEach(b => b.classList.add('locked'));
+
+  if(idx === item.correct){
+    btnEl.classList.add('correct');
+    answers[current] = 'correct';
+    score++;
+  } else {
+    btnEl.classList.add('wrong');
+    allBtns[item.correct].classList.add('correct');
+    answers[current] = 'wrong';
+  }
+
+  explainBox.innerHTML = `<strong>${idx === item.correct ? 'Benar.' : 'Kurang tepat.'}</strong> ${item.explain}`;
+  explainBox.classList.add('show');
+  nextBtn.classList.add('show');
+  refreshProgress();
+}
+
+nextBtn.addEventListener('click', () => {
+  if(current < questions.length - 1){
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  quizCard.style.display = 'none';
+  resultCard.classList.add('show');
+
+  document.getElementById('finalScore').textContent = `${score}/${questions.length}`;
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('finalPercent').textContent = `${pct}% jawaban benar`;
+
+  let kb1 = 0, kb2 = 0;
+  questions.forEach((q, i) => {
+    if(answers[i] === 'correct'){
+      if(q.kb === 1) kb1++; else kb2++;
     }
+  });
+  document.getElementById('kb1Score').textContent = `${kb1}/10`;
+  document.getElementById('kb2Score').textContent = `${kb2}/10`;
 
-    function checkAnswer(selectedIndex, btn) {
-        const q = questions[currentQIndex];
-        const isCorrect = q.options[selectedIndex].correct;
-        const buttons = document.querySelectorAll('.options button');
-        
-        buttons.forEach(b => b.disabled = true); // Disable all buttons
+  let title, desc;
+  if(score >= 18){
+    title = 'Pakar Konsumen Digital';
+    desc = 'Luar biasa! Analisis Anda mengenai perilaku dan strategi pendekatan konsumen digital sangat akurat.';
+  } else if(score >= 14){
+    title = 'Ahli Pemasaran Potensial';
+    desc = 'Sangat baik. Anda sudah memahami pola pikir konsumen modern, hanya perlu sedikit ulasan tambahan.';
+  } else if(score >= 10){
+    title = 'Perlu Penyesuaian Strategi';
+    desc = 'Pemahaman Anda masih terpaku pada beberapa pola pikir konvensional. Coba pelajari ulang kerangka 5A Kotler.';
+  } else {
+    title = 'Mulai dari Dasar';
+    desc = 'Masih banyak ruang untuk belajar. Silakan baca kembali Modul 5 secara komprehensif sebelum mencoba lagi.';
+  }
+  document.getElementById('verdictTitle').textContent = title;
+  document.getElementById('verdictDesc').textContent = desc;
+}
 
-        if (isCorrect) {
-            btn.classList.add('btn-correct');
-            score++;
-            showFeedback("Benar! " + q.options[selectedIndex].rationale, "correct");
-        } else {
-            btn.classList.add('btn-wrong');
-            // Highlight correct answer
-            const correctIndex = q.options.findIndex(o => o.correct);
-            buttons[correctIndex].classList.add('btn-correct');
-            showFeedback("Salah. " + q.options[selectedIndex].rationale, "wrong");
-        }
-        document.getElementById('next-btn').style.display = 'block';
-    }
+document.getElementById('retryBtn').addEventListener('click', () => {
+  current = 0; score = 0; answers.fill(null);
+  resultCard.classList.remove('show');
+  quizCard.style.display = 'block';
+  renderQuestion();
+});
 
-    function showFeedback(text, type) {
-        const fb = document.getElementById('feedback-area');
-        fb.innerText = text;
-        fb.className = 'feedback ' + type;
-        fb.style.display = 'block';
-    }
-
-    function nextQuestion() {
-        currentQIndex++;
-        if (currentQIndex < questions.length) {
-            loadQuestion();
-        } else {
-            document.getElementById('quiz-area').style.display = 'none';
-            document.getElementById('score-area').style.display = 'block';
-            document.getElementById('final-score').innerText = "Skor Anda: " + score + " / " + questions.length;
-        }
-    }
-
-    // Start quiz
-    loadQuestion();
+buildProgress();
+renderQuestion();
 </script>
-
 </body>
 </html>

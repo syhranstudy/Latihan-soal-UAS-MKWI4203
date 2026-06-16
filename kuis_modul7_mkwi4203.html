@@ -1,155 +1,658 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis MKWI4203 - Modul 7</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
-        .quiz-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #2c3e50; }
-        .question { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
-        .options { list-style-type: none; padding: 0; }
-        .options li { margin-bottom: 10px; }
-        .options button { width: 100%; padding: 15px; text-align: left; background: #e9ecef; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 1em; transition: 0.3s; }
-        .options button:hover { background: #dce1e6; }
-        .options button:disabled { cursor: not-allowed; }
-        .btn-correct { background: #d4edda !important; border-color: #c3e6cb !important; color: #155724; }
-        .btn-wrong { background: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24; }
-        .feedback { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
-        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .next-btn { display: none; width: 100%; padding: 15px; margin-top: 20px; background: #17a2b8; color: white; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
-        .next-btn:hover { background: #138496; }
-        .score-container { text-align: center; display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Modul 7 — Kewirausahaan di Era Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14172B;
+    --surface: #1C2046;
+    --surface-2: #262B56;
+    --accent-amber: #F2A93B;
+    --accent-teal: #4FD1C5;
+    --accent-coral: #FF6B6B;
+    --text-primary: #F5F3EE;
+    --text-muted: #9CA3C4;
+    --border: rgba(245,243,238,0.10);
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: radial-gradient(circle at 20% -10%, #232958 0%, var(--bg) 55%);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding: 32px 16px 64px;
+  }
+
+  .app{ width:100%; max-width: 640px; }
+
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-amber);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+
+  h1{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 5vw, 28px);
+    font-weight: 700;
+    margin: 0 0 18px;
+    line-height: 1.25;
+  }
+
+  .progress-track{
+    display:flex;
+    align-items:flex-end;
+    gap: 3px;
+    height: 36px;
+    margin-bottom: 8px;
+  }
+  .progress-bar{
+    flex:1;
+    background: var(--border);
+    border-radius: 3px 3px 0 0;
+    transition: background .35s ease, transform .35s ease;
+    transform-origin: bottom;
+  }
+  .progress-bar.current{ background: var(--accent-amber); }
+  .progress-bar.correct{ background: var(--accent-teal); }
+  .progress-bar.wrong{ background: var(--accent-coral); }
+
+  .progress-label{
+    display:flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+  .progress-label span:last-child{ font-weight:600; color: var(--text-primary); }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+  }
+
+  .q-meta{
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .q-text{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 22px;
+  }
+
+  .options{ display:flex; flex-direction:column; gap: 10px; }
+
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap: 12px;
+    text-align:left;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, transform .15s ease;
+  }
+  .option:hover:not(.locked){ border-color: var(--accent-amber); transform: translateY(-1px); }
+  .option:focus-visible{ outline: 2px solid var(--accent-amber); outline-offset: 2px; }
+
+  .option .tag{
+    flex-shrink:0;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: rgba(245,243,238,0.08);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .option.correct{ border-color: var(--accent-teal); background: rgba(79,209,197,0.12); }
+  .option.correct .tag{ background: var(--accent-teal); color: #0B2421; }
+  .option.wrong{ border-color: var(--accent-coral); background: rgba(255,107,107,0.10); }
+  .option.wrong .tag{ background: var(--accent-coral); color: #2B0B0B; }
+  .option.locked:not(.correct):not(.wrong){ opacity: 0.45; }
+
+  .explain{
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent-amber);
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    display:none;
+  }
+  .explain.show{ display:block; }
+  .explain strong{ color: var(--text-primary); }
+
+  .next-btn{
+    margin-top: 22px;
+    width:100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: var(--accent-amber);
+    color: #2B1B00;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor:pointer;
+    display:none;
+    transition: filter .2s ease;
+  }
+  .next-btn.show{ display:block; }
+  .next-btn:hover{ filter: brightness(1.08); }
+
+  /* Result screen */
+  .result{ display:none; text-align:center; }
+  .result.show{ display:block; }
+  .result .score-num{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 64px;
+    font-weight: 700;
+    margin: 6px 0 2px;
+    background: linear-gradient(135deg, var(--accent-amber), var(--accent-teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .result .score-sub{ color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+  .result .verdict{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .result .verdict-desc{
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 440px;
+    margin-left:auto; margin-right:auto;
+  }
+  .breakdown{
+    display:flex; gap:12px; margin-bottom:24px;
+  }
+  .breakdown .b-item{
+    flex:1; background: var(--surface-2); border-radius: 14px; padding: 14px;
+    border: 1px solid var(--border);
+  }
+  .breakdown .b-num{ font-family:'Space Grotesk', sans-serif; font-size:22px; font-weight:700; }
+  .breakdown .b-label{ font-size: 12px; color: var(--text-muted); margin-top:4px; }
+
+  .retry-btn{
+    padding: 14px 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor:pointer;
+    transition: border-color .2s ease;
+  }
+  .retry-btn:hover{ border-color: var(--accent-amber); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
 </head>
 <body>
 
-<div class="quiz-container">
-    <h2>Latihan Soal Modul 7:<br>Menerapkan <i>Blue Ocean Strategy</i></h2>
-    <div id="quiz-area">
-        <div id="question-text" class="question">Memuat pertanyaan...</div>
-        <ul id="options-area" class="options"></ul>
-        <div id="feedback-area" class="feedback"></div>
-        <button id="next-btn" class="next-btn" onclick="nextQuestion()">Pertanyaan Selanjutnya</button>
+<div class="app">
+  <p class="eyebrow">MKWI4203 · Kewirausahaan di Era Digital</p>
+  <h1>Modul 7 — Strategi & Peluncuran Usaha</h1>
+
+  <div class="progress-track" id="progressTrack"></div>
+  <div class="progress-label">
+    <span id="progressText">Soal 1 dari 20</span>
+    <span id="scoreText">Skor: 0</span>
+  </div>
+
+  <div class="card" id="quizCard">
+    <p class="q-meta" id="qMeta">Kegiatan Belajar 1</p>
+    <p class="q-text" id="qText"></p>
+    <div class="options" id="optionsContainer"></div>
+    <div class="explain" id="explainBox"></div>
+    <button class="next-btn" id="nextBtn">Lanjut →</button>
+  </div>
+
+  <div class="card result" id="resultCard">
+    <p class="eyebrow" style="text-align:center;">Hasil Modul 7</p>
+    <div class="score-num" id="finalScore">0/20</div>
+    <p class="score-sub" id="finalPercent">0%</p>
+    <p class="verdict" id="verdictTitle"></p>
+    <p class="verdict-desc" id="verdictDesc"></p>
+    <div class="breakdown">
+      <div class="b-item">
+        <div class="b-num" id="kb1Score">0/10</div>
+        <div class="b-label">KB1 · Blue Ocean Strategy</div>
+      </div>
+      <div class="b-item">
+        <div class="b-num" id="kb2Score">0/10</div>
+        <div class="b-label">KB2 · Peluncuran Usaha Digital</div>
+      </div>
     </div>
-    <div id="score-area" class="score-container">
-        <h3 id="final-score"></h3>
-        <button class="next-btn" style="display:block;" onclick="location.reload()">Ulangi Kuis</button>
-    </div>
+    <button class="retry-btn" id="retryBtn">Ulangi Kuis Modul 7</button>
+  </div>
 </div>
 
 <script>
-    const questions = [
-        {
-            question: "Konsep utama dari 'Blue Ocean Strategy' (Strategi Samudra Biru) adalah...",
-            options: [
-                { text: "Mengalahkan kompetitor dengan menurunkan harga secara drastis", correct: false, rationale: "Ini adalah strategi 'Red Ocean' yang berdarah-darah karena perang harga." },
-                { text: "Menciptakan ruang pasar baru yang belum ada pesaingnya sehingga persaingan menjadi tidak relevan", correct: true, rationale: "Blue Ocean fokus pada inovasi nilai untuk membuka permintaan baru di pasar yang belum tersentuh." },
-                { text: "Memfokuskan seluruh sumber daya untuk merebut pangsa pasar dari pemimpin industri", correct: false, rationale: "Merebut pangsa pasar yang sudah ada adalah ciri khas Red Ocean." },
-                { text: "Membangun monopoli pasar melalui akuisisi perusahaan lawan", correct: false, rationale: "Blue Ocean dibangun lewat inovasi mandiri, bukan sekadar membeli kompetitor." }
-            ]
-        },
-        {
-            question: "Dalam kanvas strategi (Strategy Canvas) Blue Ocean, Inovasi Nilai (Value Innovation) tercipta ketika perusahaan mampu menyelaraskan dua hal secara bersamaan, yaitu...",
-            options: [
-                { text: "Peningkatan nilai bagi pembeli (diferensiasi) dan penurunan biaya (low cost)", correct: true, rationale: "Inovasi nilai mendobrak dogma bahwa diferensiasi pasti mahal; strategi ini mengejar nilai tinggi dengan biaya rendah sekaligus." },
-                { text: "Peningkatan kualitas produk dan peningkatan harga jual", correct: false, rationale: "Ini sekadar strategi premium biasa, bukan inovasi nilai." },
-                { text: "Penurunan biaya produksi dan penurunan kualitas bahan baku", correct: false, rationale: "Ini hanya strategi pemotongan biaya yang mengorbankan nilai konsumen." },
-                { text: "Peningkatan anggaran pemasaran dan ekspansi pasar global", correct: false, rationale: "Ekspansi tanpa nilai yang unik tetap akan masuk ke samudra merah." }
-            ]
-        },
-        {
-            question: "Kerangka Kerja Empat Langkah (Four Actions Framework) dalam Blue Ocean Strategy terdiri dari...",
-            options: [
-                { text: "Plan, Do, Check, Action", correct: false, rationale: "Ini adalah siklus manajemen kualitas Deming (PDCA)." },
-                { text: "Strengths, Weaknesses, Opportunities, Threats", correct: false, rationale: "Ini adalah kerangka analisis SWOT." },
-                { text: "Eliminate, Reduce, Raise, Create (Hapuskan, Kurangi, Tingkatkan, Ciptakan)", correct: true, rationale: "Kerangka ERRC digunakan untuk merekonstruksi elemen-elemen nilai pembeli dan merancang kurva nilai yang baru." },
-                { text: "Product, Price, Place, Promotion", correct: false, rationale: "Ini adalah bauran pemasaran tradisional (Marketing Mix 4P)." }
-            ]
-        },
-        {
-            question: "Manakah dari situasi berikut yang paling menggambarkan lingkungan 'Red Ocean' (Samudra Merah)?",
-            options: [
-                { text: "Batasan industri sudah didefinisikan dan diterima dengan jelas, serta aturan persaingan sudah dimaklumi", correct: true, rationale: "Di samudra merah, pasar sudah sesak dan perusahaan saling berebut porsi kue yang sama." },
-                { text: "Belum ada aturan industri yang baku karena industrinya baru saja terbentuk", correct: false, rationale: "Kondisi tanpa aturan baku justru merupakan ciri samudra biru." },
-                { text: "Fokus utama perusahaan adalah menciptakan permintaan baru", correct: false, rationale: "Menciptakan permintaan baru adalah fokus samudra biru." },
-                { text: "Persaingan dianggap tidak relevan oleh para pelaku usaha", correct: false, rationale: "Persaingan justru sangat sengit dan mematikan di samudra merah." }
-            ]
-        },
-        {
-            question: "Dalam menerapkan kerangka kerja 'Eliminate' (Hapuskan) pada Blue Ocean Strategy, perusahaan harus...",
-            options: [
-                { text: "Menghapuskan seluruh produk lama dan menggantinya dengan yang baru", correct: false, rationale: "Bukan menghapus produk, tetapi menghapus elemen tertentu yang tidak bernilai." },
-                { text: "Meniadakan faktor-faktor yang selama ini dianggap lumrah dan selalu dipertandingkan oleh industri, padahal tidak memberikan nilai lebih bagi konsumen", correct: true, rationale: "Menghapus elemen usang ini akan secara drastis menurunkan struktur biaya perusahaan." },
-                { text: "Memberhentikan karyawan yang tidak mencapai target penjualan", correct: false, rationale: "Ini masalah operasional SDM, bukan strategi penciptaan pasar." },
-                { text: "Menghapus target keuntungan demi kepuasan pelanggan", correct: false, rationale: "Blue ocean tetap bertujuan mencari profitabilitas yang tinggi." }
-            ]
-        }
-    ];
+const questions = [
+  // ===== KB1: Blue Ocean Strategy di Era Digital (1-10) =====
+  {
+    kb: 1,
+    q: "Fokus utama dari 'Blue Ocean Strategy' (Strategi Samudra Biru) adalah...",
+    options: [
+      "Mengalahkan pesaing dengan memicu perang harga secara ekstrem",
+      "Menciptakan ruang pasar baru tanpa pesaing sehingga persaingan menjadi tidak relevan",
+      "Melakukan monopoli pasar dengan cara mengakuisisi seluruh kompetitor",
+      "Mempertahankan pangsa pasar lama meskipun margin keuntungan terus menipis"
+    ],
+    correct: 1,
+    explain: "Alih-alih berdarah-darah bertarung di ruang pasar yang sudah ada (Samudra Merah), Blue Ocean Strategy berfokus pada penciptaan ruang pasar baru (permintaan baru) yang belum ada pesaingnya."
+  },
+  {
+    kb: 1,
+    q: "Apa yang dimaksud dengan 'Value Innovation' (Inovasi Nilai) yang menjadi jantung dari Blue Ocean Strategy?",
+    options: [
+      "Mengejar nilai (diferensiasi) dan menekan biaya (low-cost) secara bersamaan",
+      "Meningkatkan kualitas produk dengan harga jual yang paling tinggi di pasaran",
+      "Mengurangi biaya produksi dengan menurunkan kualitas layanan secara drastis",
+      "Meniru teknologi inovatif kompetitor untuk menghemat biaya R&D"
+    ],
+    correct: 0,
+    explain: "Inovasi nilai mendobrak dogma klasik yang menganggap diferensiasi pasti mahal. Strategi ini menyelaraskan peningkatan nilai bagi konsumen sekaligus menurunkan struktur biaya bagi perusahaan."
+  },
+  {
+    kb: 1,
+    q: "Karakteristik dominan dari lingkungan 'Red Ocean' (Samudra Merah) adalah...",
+    options: [
+      "Fokus pada penciptaan permintaan baru (new demand)",
+      "Batasan industri sudah diakui bersama, dan perusahaan bersaing ketat memperebutkan permintaan pasar yang sudah ada",
+      "Persaingan dianggap sudah tidak relevan dan tidak dipedulikan",
+      "Aturan main industri belum ada atau belum terbentuk"
+    ],
+    correct: 1,
+    explain: "Di Samudra Merah, pasar sudah sesak (crowded) dan batasan industrinya jelas. Kompetitor saling 'memakan' pangsa pasar yang stagnan sehingga keuntungan semakin menipis."
+  },
+  {
+    kb: 1,
+    q: "Kerangka Kerja Empat Langkah (Four Actions Framework) yang digunakan untuk menyusun Blue Ocean Strategy terdiri dari unsur...",
+    options: [
+      "Plan, Do, Check, Action (PDCA)",
+      "Strengths, Weaknesses, Opportunities, Threats (SWOT)",
+      "Eliminate, Reduce, Raise, Create (ERRC)",
+      "Product, Price, Place, Promotion (4P)"
+    ],
+    correct: 2,
+    explain: "Kerangka ERRC (Hapuskan, Kurangi, Tingkatkan, Ciptakan) digunakan perusahaan untuk merekonstruksi elemen-elemen nilai pembeli dan keluar dari jebakan samudra merah."
+  },
+  {
+    kb: 1,
+    q: "Dalam kerangka ERRC, tujuan dari langkah 'Eliminate' (Hapuskan) adalah untuk...",
+    options: [
+      "Menghapuskan produk-produk yang tidak laku dijual selama bertahun-tahun",
+      "Meniadakan faktor-faktor kompetisi yang selama ini dianggap biasa (take for granted) oleh industri, padahal tidak lagi memberikan nilai bagi konsumen",
+      "Menghapus divisi pemasaran untuk meminimalkan pengeluaran perusahaan",
+      "Mencabut investasi pada teknologi digital yang mahal"
+    ],
+    correct: 1,
+    explain: "Menghapuskan elemen usang yang tidak lagi relevan bagi konsumen akan menurunkan struktur biaya perusahaan secara drastis, sehingga perusahaan bisa fokus pada inovasi."
+  },
+  {
+    kb: 1,
+    q: "Bagaimana teknologi digital mempermudah penerapan Blue Ocean Strategy di era modern?",
+    options: [
+      "Karena teknologi digital menghalangi masuknya pendatang baru ke pasar global",
+      "Karena inovasi model bisnis digital (seperti platform/cloud) dapat melipatgandakan jangkauan pasar dengan biaya marjinal yang sangat rendah",
+      "Karena teknologi digital selalu menuntut biaya investasi fisik yang masif",
+      "Karena internet memaksa semua perusahaan menjual produk dengan harga yang persis sama"
+    ],
+    correct: 1,
+    explain: "Skalabilitas bisnis digital dan rendahnya biaya untuk mendistribusikan perangkat lunak/layanan memungkinkan perusahaan menciptakan samudra biru dengan biaya yang jauh lebih efisien dibandingkan era industri fisik."
+  },
+  {
+    kb: 1,
+    q: "Fungsi utama dari alat analitik 'Strategy Canvas' (Kanvas Strategi) dalam merancang Blue Ocean adalah...",
+    options: [
+      "Mencatat pengeluaran harian dan operasional kantor",
+      "Memetakan secara visual elemen-elemen nilai yang ditawarkan oleh industri saat ini, sehingga perusahaan bisa mencari ruang kosong untuk berbeda",
+      "Menggambarkan struktur hierarki organisasi perusahaan secara lengkap",
+      "Menghitung jumlah karyawan yang dibutuhkan untuk peluncuran produk"
+    ],
+    correct: 1,
+    explain: "Kanvas strategi menangkap profil strategis industri saat ini. Sumbu horizontal menunjukkan area kompetisi, dan sumbu vertikal menunjukkan tingkat penawaran. Ini sangat penting untuk melihat pola industri dan mendobraknya."
+  },
+  {
+    kb: 1,
+    q: "Dalam mencari samudra biru, alih-alih berfokus pada pelanggan lama (customers), perusahaan sangat dianjurkan untuk menarik kelompok...",
+    options: [
+      "Pesaing yang bangkrut",
+      "Non-customers (Bukan pelanggan), yaitu mereka yang selama ini belum pernah menggunakan produk dari industri tersebut",
+      "Distributor dan perantara (middlemen)",
+      "Karyawan internal perusahaan"
+    ],
+    correct: 1,
+    explain: "Mempelajari mengapa 'Non-customers' menolak atau tidak tertarik pada produk industri saat ini justru akan memberikan wawasan terbesar untuk membuka permintaan pasar yang baru (unleashing new demand)."
+  },
+  {
+    kb: 1,
+    q: "Langkah 'Create' (Ciptakan) dalam Four Actions Framework menuntut perusahaan untuk...",
+    options: [
+      "Menciptakan kembali produk kompetitor dengan kemasan yang berbeda",
+      "Menciptakan departemen baru khusus untuk menghadapi pesaing lama",
+      "Menciptakan fitur atau nilai baru yang belum pernah ditawarkan sebelumnya oleh industri mana pun",
+      "Menciptakan utang baru demi mendanai riset dan pengembangan rahasia"
+    ],
+    correct: 2,
+    explain: "Langkah ini mendorong perusahaan untuk memikirkan elemen nilai tambah yang benar-benar baru, inovatif, dan belum pernah eksis di pasaran."
+  },
+  {
+    kb: 1,
+    q: "Salah satu contoh sukses penerapan konsep yang mirip dengan Blue Ocean Strategy di ranah aplikasi mobilitas (ride-sharing) adalah ketika mereka...",
+    options: [
+      "Membeli ratusan unit taksi konvensional baru",
+      "Tidak membeli armada kendaraan sama sekali, melainkan menciptakan aplikasi untuk memanfaatkan kapasitas kendaraan pribadi masyarakat yang menganggur",
+      "Menolak penggunaan sistem pelacakan GPS (Maps) di aplikasi mereka",
+      "Mempekerjakan sopir taksi konvensional dengan sistem gaji tetap"
+    ],
+    correct: 1,
+    explain: "Platform ride-sharing tidak bersaing di ranah 'siapa yang punya armada paling banyak', tetapi mereka berinovasi dengan memanfaatkan model 'sharing economy' yang sebelumnya bukan ranah kompetisi taksi konvensional."
+  },
 
-    let currentQIndex = 0;
-    let score = 0;
+  // ===== KB2: Proses Peluncuran Usaha di Era Digital (11-20) =====
+  {
+    kb: 2,
+    q: "Dalam metodologi startup digital, apa yang dimaksud dengan Minimum Viable Product (MVP)?",
+    options: [
+      "Produk sempurna yang memakan waktu riset tahunan sebelum rilis",
+      "Versi awal produk dengan fitur dasar yang cukup untuk diluncurkan kepada pengguna pertama guna mengumpulkan umpan balik (feedback) secara cepat",
+      "Strategi menetapkan harga jual di titik paling minimum agar perusahaan tidak rugi",
+      "Merekrut tim dengan kualifikasi dan pengalaman yang minimum"
+    ],
+    correct: 1,
+    explain: "MVP (Produk Layak Minimum) dirancang untuk memvalidasi hipotesis bisnis ke pasar nyata secepat dan semurah mungkin, bukan untuk memamerkan kesempurnaan fitur."
+  },
+  {
+    kb: 2,
+    q: "Mengapa pendekatan pengembangan usaha secara 'Agile' (Tangkas) sangat disarankan untuk proses peluncuran produk digital?",
+    options: [
+      "Karena pendekatan ini menghilangkan kebutuhan terhadap dokumen rencana bisnis (business plan)",
+      "Karena sifatnya yang iteratif, cepat beradaptasi dengan perubahan, dan responsif terhadap feedback pelanggan saat pengembangan berlangsung",
+      "Karena metode ini hanya membutuhkan modal satu kali suntikan",
+      "Karena metode ini menjamin produk pasti sukses tanpa pesaing"
+    ],
+    correct: 1,
+    explain: "Di era digital yang penuh ketidakpastian (VUCA), rencana bisa usang dalam sebulan. Metode Agile memastikan peluncuran dilakukan secara bertahap (iteratif) dan adaptif berdasarkan apa yang disukai pengguna."
+  },
+  {
+    kb: 2,
+    q: "Siklus iteratif utama yang menjadi jantung dari pendekatan Lean Startup saat meluncurkan bisnis digital adalah...",
+    options: [
+      "Design - Manufacture - Sell (Rancang - Pabrikasi - Jual)",
+      "Build - Measure - Learn (Buat - Ukur - Pelajari)",
+      "Plan - Act - Review (Rencanakan - Tindak - Tinjau)",
+      "Ideate - Profit - Expand (Gagasan - Untung - Ekspansi)"
+    ],
+    correct: 1,
+    explain: "Siklus Build (membuat MVP) - Measure (mengukur respons dan data pengguna) - Learn (mempelajari data untuk memutuskan perbaikan atau perubahan arah) adalah fondasi Lean Startup."
+  },
+  {
+    kb: 2,
+    q: "Apabila dari hasil peluncuran MVP ditemukan bahwa asumsi pasar awal ternyata salah total, langkah strategis yang harus dilakukan perusahaan adalah melakukan 'Pivot'. Apa itu Pivot?",
+    options: [
+      "Berhenti dari bisnis dan menutup perusahaan selamanya",
+      "Perubahan arah strategi, model bisnis, atau fitur utama secara fundamental, namun tetap berpegang pada visi inti penyelesaian masalah",
+      "Memecat seluruh staf pengembang aplikasi dan mencari agensi luar",
+      "Menyuntikkan modal tambahan yang lebih besar ke strategi yang salah tersebut"
+    ],
+    correct: 1,
+    explain: "Pivot adalah manuver berputar haluan secara strategis. Ini bukan kegagalan total, melainkan koreksi arah (misalnya mengubah target demografi atau model pendapatan) berdasarkan data pembelajaran dari MVP."
+  },
+  {
+    kb: 2,
+    q: "Tahapan ketika sebuah startup akhirnya berhasil menciptakan produk yang sangat diinginkan oleh pasar yang tepat, sehingga pertumbuhan pengguna terjadi secara organik, disebut...",
+    options: [
+      "Product-Market Fit",
+      "Minimum Viable Product",
+      "Go-To-Market Phase",
+      "Seed Funding"
+    ],
+    correct: 0,
+    explain: "Product-Market Fit (Kesesuaian Produk dengan Pasar) adalah titik krusial (holy grail) di mana nilai produk akhirnya sinkron secara sempurna dengan kebutuhan pasar (traction meningkat pesat)."
+  },
+  {
+    kb: 2,
+    q: "Salah satu taktik 'Go-To-Market' (GTM) digital untuk menguji kestabilan server dan mengumpulkan umpan balik eksklusif sebelum rilis ke publik luas adalah dengan melakukan...",
+    options: [
+      "Memasang iklan di koran nasional secara masif",
+      "Peluncuran versi Beta Tertutup (Closed Beta/Soft Launch) kepada komunitas pengguna awal (early adopters) yang terbatas",
+      "Membuka ratusan toko cabang fisik dalam satu hari (Grand Opening)",
+      "Melakukan diskon cuci gudang sebesar 90 persen"
+    ],
+    correct: 1,
+    explain: "Soft Launch atau Closed Beta adalah rilis lunak kepada kelompok kecil pengguna untuk mengidentifikasi bug/kesalahan sistem (stress test) secara rahasia sebelum nama merek dipertaruhkan di hadapan publik luas."
+  },
+  {
+    kb: 2,
+    q: "Konsep 'Growth Hacking' sangat populer di kalangan peluncuran startup digital. Fokus utama dari strategi ini adalah...",
+    options: [
+      "Membobol (hacking) sistem keamanan server milik pesaing untuk mencuri data",
+      "Eksperimen pemasaran yang sangat kreatif, berbiaya rendah, dan digerakkan oleh analitik data untuk memperoleh pertumbuhan pelanggan secepat mungkin",
+      "Menambah jumlah karyawan di departemen penjualan setiap minggunya",
+      "Membayar artis internasional paling mahal untuk kampanye iklan TV"
+    ],
+    correct: 1,
+    explain: "Growth Hacking bukan soal peretasan kode siber, melainkan 'peretasan' laju pertumbuhan bisnis. Startup yang minim dana menggunakan taktik viral (referral codes, integrasi sosial) untuk tumbuh secara eksponensial."
+  },
+  {
+    kb: 2,
+    q: "Dalam menyusun strategi peluncuran (Go-To-Market Strategy), komponen 'Proposisi Nilai' (Value Proposition) berfungsi untuk...",
+    options: [
+      "Menentukan berapa budget maksimal untuk menyewa kantor",
+      "Menjawab dengan jelas masalah apa yang dipecahkan dan mengapa audiens harus peduli pada produk ini dibanding yang lain",
+      "Mengidentifikasi letak geografis para investor perusahaan",
+      "Menghitung proyeksi pajak penghasilan di akhir tahun"
+    ],
+    correct: 1,
+    explain: "Saat peluncuran, pesan utama harus sangat tajam. Proposisi Nilai adalah ujung tombak komunikasi pemasaran yang menjelaskan daya tarik unik dari inovasi produk tersebut."
+  },
+  {
+    kb: 2,
+    q: "Setelah peluncuran (Post-Launch), metrik utama yang harus dipantau untuk memastikan bahwa pelanggan tidak langsung menghapus aplikasi atau meninggalkan produk setelah mencoba pertama kali adalah metrik...",
+    options: [
+      "Customer Acquisition Cost (Biaya Akuisisi Pelanggan)",
+      "Retention Rate (Tingkat Retensi/Pemeliharaan Pengguna)",
+      "Bounce Rate (Tingkat Pentalan Halaman Web)",
+      "Gross Profit Margin (Margin Laba Kotor)"
+    ],
+    correct: 1,
+    explain: "Retention Rate mengukur berapa banyak pengguna yang kembali menggunakan produk setelah kunjungan pertama. Jika retensi rendah, berarti produk belum mencapai Product-Market Fit."
+  },
+  {
+    kb: 2,
+    q: "Pada tahap awal peluncuran (early traction), daripada memaksakan iklan berbayar (Ads) secara membabi-buta, wirausaha digital disarankan untuk berfokus membangun...",
+    options: [
+      "Komunitas pengguna organik (Community Building) dan pemasaran mulut ke mulut dari audiens yang fanatik",
+      "Sistem birokrasi hierarki perusahaan yang tebal dan rumit",
+      "Membeli pengikut (followers) bot palsu agar terlihat besar",
+      "Pabrik-pabrik pencetak baliho reklame sendiri"
+    ],
+    correct: 0,
+    explain: "Di tahap awal, dukungan dan pembelaan dari komunitas (advocate/early adopters) jauh lebih ampuh dan murah dibandingkan membakar uang untuk iklan berbayar yang belum tentu tepat sasaran."
+  }
+];
 
-    function loadQuestion() {
-        const q = questions[currentQIndex];
-        document.getElementById('question-text').innerText = (currentQIndex + 1) + ". " + q.question;
-        const optionsArea = document.getElementById('options-area');
-        optionsArea.innerHTML = '';
-        document.getElementById('feedback-area').style.display = 'none';
-        document.getElementById('next-btn').style.display = 'none';
+let current = 0;
+let score = 0;
+let locked = false;
+const answers = new Array(questions.length).fill(null); 
 
-        q.options.forEach((opt, index) => {
-            const li = document.createElement('li');
-            const btn = document.createElement('button');
-            btn.innerText = opt.text;
-            btn.onclick = () => checkAnswer(index, btn);
-            li.appendChild(btn);
-            optionsArea.appendChild(li);
-        });
+const progressTrack = document.getElementById('progressTrack');
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const qMeta = document.getElementById('qMeta');
+const qText = document.getElementById('qText');
+const optionsContainer = document.getElementById('optionsContainer');
+const explainBox = document.getElementById('explainBox');
+const nextBtn = document.getElementById('nextBtn');
+const quizCard = document.getElementById('quizCard');
+const resultCard = document.getElementById('resultCard');
+
+function buildProgress(){
+  progressTrack.innerHTML = '';
+  questions.forEach((_, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'progress-bar';
+    const h = 30 + (i / (questions.length - 1)) * 70;
+    bar.style.height = h + '%';
+    progressTrack.appendChild(bar);
+  });
+}
+
+function refreshProgress(){
+  const bars = progressTrack.children;
+  for(let i=0;i<bars.length;i++){
+    bars[i].classList.remove('current','correct','wrong');
+    if(answers[i] === 'correct') bars[i].classList.add('correct');
+    else if(answers[i] === 'wrong') bars[i].classList.add('wrong');
+    else if(i === current) bars[i].classList.add('current');
+  }
+  progressText.textContent = `Soal ${current+1} dari ${questions.length}`;
+  scoreText.textContent = `Skor: ${score}`;
+}
+
+function renderQuestion(){
+  locked = false;
+  const item = questions[current];
+  qMeta.textContent = `Kegiatan Belajar ${item.kb}`;
+  qText.textContent = item.q;
+  optionsContainer.innerHTML = '';
+  explainBox.classList.remove('show');
+  explainBox.innerHTML = '';
+  nextBtn.classList.remove('show');
+  nextBtn.textContent = current === questions.length - 1 ? 'Lihat Hasil →' : 'Lanjut →';
+
+  item.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="tag">${String.fromCharCode(65+idx)}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => selectOption(idx, btn));
+    optionsContainer.appendChild(btn);
+  });
+
+  refreshProgress();
+}
+
+function selectOption(idx, btnEl){
+  if(locked) return;
+  locked = true;
+  const item = questions[current];
+  const allBtns = optionsContainer.querySelectorAll('.option');
+  allBtns.forEach(b => b.classList.add('locked'));
+
+  if(idx === item.correct){
+    btnEl.classList.add('correct');
+    answers[current] = 'correct';
+    score++;
+  } else {
+    btnEl.classList.add('wrong');
+    allBtns[item.correct].classList.add('correct');
+    answers[current] = 'wrong';
+  }
+
+  explainBox.innerHTML = `<strong>${idx === item.correct ? 'Benar.' : 'Kurang tepat.'}</strong> ${item.explain}`;
+  explainBox.classList.add('show');
+  nextBtn.classList.add('show');
+  refreshProgress();
+}
+
+nextBtn.addEventListener('click', () => {
+  if(current < questions.length - 1){
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  quizCard.style.display = 'none';
+  resultCard.classList.add('show');
+
+  document.getElementById('finalScore').textContent = `${score}/${questions.length}`;
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('finalPercent').textContent = `${pct}% jawaban benar`;
+
+  let kb1 = 0, kb2 = 0;
+  questions.forEach((q, i) => {
+    if(answers[i] === 'correct'){
+      if(q.kb === 1) kb1++; else kb2++;
     }
+  });
+  document.getElementById('kb1Score').textContent = `${kb1}/10`;
+  document.getElementById('kb2Score').textContent = `${kb2}/10`;
 
-    function checkAnswer(selectedIndex, btn) {
-        const q = questions[currentQIndex];
-        const isCorrect = q.options[selectedIndex].correct;
-        const buttons = document.querySelectorAll('.options button');
-        
-        buttons.forEach(b => b.disabled = true);
+  let title, desc;
+  if(score >= 18){
+    title = 'Inovator Samudra Biru';
+    desc = 'Luar biasa! Pemahaman Anda terkait strategi menembus pasar baru (BOS) dan manuver Lean Startup sudah sangat mapan.';
+  } else if(score >= 14){
+    title = 'Perintis Tangkas (Agile)';
+    desc = 'Bagus! Anda mengerti cara menghindari kompetisi berdarah dan memahami esensi dari Minimum Viable Product (MVP).';
+  } else if(score >= 10){
+    title = 'Awas Jebakan Red Ocean';
+    desc = 'Waspada, beberapa logika Anda masih terperangkap di Samudra Merah. Coba perdalam lagi perbedaan MVP dan produk final.';
+  } else {
+    title = 'Perlu Revisi Strategi';
+    desc = 'Jangan buru-buru peluncuran! Mari baca kembali siklus "Build-Measure-Learn" dan kerangka ERRC sebelum mencoba lagi.';
+  }
+  document.getElementById('verdictTitle').textContent = title;
+  document.getElementById('verdictDesc').textContent = desc;
+}
 
-        if (isCorrect) {
-            btn.classList.add('btn-correct');
-            score++;
-            showFeedback("Benar! " + q.options[selectedIndex].rationale, "correct");
-        } else {
-            btn.classList.add('btn-wrong');
-            const correctIndex = q.options.findIndex(o => o.correct);
-            buttons[correctIndex].classList.add('btn-correct');
-            showFeedback("Salah. " + q.options[selectedIndex].rationale, "wrong");
-        }
-        document.getElementById('next-btn').style.display = 'block';
-    }
+document.getElementById('retryBtn').addEventListener('click', () => {
+  current = 0; score = 0; answers.fill(null);
+  resultCard.classList.remove('show');
+  quizCard.style.display = 'block';
+  renderQuestion();
+});
 
-    function showFeedback(text, type) {
-        const fb = document.getElementById('feedback-area');
-        fb.innerText = text;
-        fb.className = 'feedback ' + type;
-        fb.style.display = 'block';
-    }
-
-    function nextQuestion() {
-        currentQIndex++;
-        if (currentQIndex < questions.length) {
-            loadQuestion();
-        } else {
-            document.getElementById('quiz-area').style.display = 'none';
-            document.getElementById('score-area').style.display = 'block';
-            document.getElementById('final-score').innerText = "Skor Anda: " + score + " / " + questions.length;
-        }
-    }
-
-    loadQuestion();
+buildProgress();
+renderQuestion();
 </script>
-
 </body>
 </html>

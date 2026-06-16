@@ -1,155 +1,658 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis MKWI4203 - Modul 6</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
-        .quiz-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #2c3e50; }
-        .question { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
-        .options { list-style-type: none; padding: 0; }
-        .options li { margin-bottom: 10px; }
-        .options button { width: 100%; padding: 15px; text-align: left; background: #e9ecef; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 1em; transition: 0.3s; }
-        .options button:hover { background: #dce1e6; }
-        .options button:disabled { cursor: not-allowed; }
-        .btn-correct { background: #d4edda !important; border-color: #c3e6cb !important; color: #155724; }
-        .btn-wrong { background: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24; }
-        .feedback { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
-        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .next-btn { display: none; width: 100%; padding: 15px; margin-top: 20px; background: #28a745; color: white; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
-        .next-btn:hover { background: #218838; }
-        .score-container { text-align: center; display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Modul 6 — Kewirausahaan di Era Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14172B;
+    --surface: #1C2046;
+    --surface-2: #262B56;
+    --accent-amber: #F2A93B;
+    --accent-teal: #4FD1C5;
+    --accent-coral: #FF6B6B;
+    --text-primary: #F5F3EE;
+    --text-muted: #9CA3C4;
+    --border: rgba(245,243,238,0.10);
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: radial-gradient(circle at 20% -10%, #232958 0%, var(--bg) 55%);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding: 32px 16px 64px;
+  }
+
+  .app{ width:100%; max-width: 640px; }
+
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-amber);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+
+  h1{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 5vw, 28px);
+    font-weight: 700;
+    margin: 0 0 18px;
+    line-height: 1.25;
+  }
+
+  .progress-track{
+    display:flex;
+    align-items:flex-end;
+    gap: 3px;
+    height: 36px;
+    margin-bottom: 8px;
+  }
+  .progress-bar{
+    flex:1;
+    background: var(--border);
+    border-radius: 3px 3px 0 0;
+    transition: background .35s ease, transform .35s ease;
+    transform-origin: bottom;
+  }
+  .progress-bar.current{ background: var(--accent-amber); }
+  .progress-bar.correct{ background: var(--accent-teal); }
+  .progress-bar.wrong{ background: var(--accent-coral); }
+
+  .progress-label{
+    display:flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+  .progress-label span:last-child{ font-weight:600; color: var(--text-primary); }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+  }
+
+  .q-meta{
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .q-text{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 22px;
+  }
+
+  .options{ display:flex; flex-direction:column; gap: 10px; }
+
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap: 12px;
+    text-align:left;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, transform .15s ease;
+  }
+  .option:hover:not(.locked){ border-color: var(--accent-amber); transform: translateY(-1px); }
+  .option:focus-visible{ outline: 2px solid var(--accent-amber); outline-offset: 2px; }
+
+  .option .tag{
+    flex-shrink:0;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: rgba(245,243,238,0.08);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .option.correct{ border-color: var(--accent-teal); background: rgba(79,209,197,0.12); }
+  .option.correct .tag{ background: var(--accent-teal); color: #0B2421; }
+  .option.wrong{ border-color: var(--accent-coral); background: rgba(255,107,107,0.10); }
+  .option.wrong .tag{ background: var(--accent-coral); color: #2B0B0B; }
+  .option.locked:not(.correct):not(.wrong){ opacity: 0.45; }
+
+  .explain{
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent-amber);
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    display:none;
+  }
+  .explain.show{ display:block; }
+  .explain strong{ color: var(--text-primary); }
+
+  .next-btn{
+    margin-top: 22px;
+    width:100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: var(--accent-amber);
+    color: #2B1B00;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor:pointer;
+    display:none;
+    transition: filter .2s ease;
+  }
+  .next-btn.show{ display:block; }
+  .next-btn:hover{ filter: brightness(1.08); }
+
+  /* Result screen */
+  .result{ display:none; text-align:center; }
+  .result.show{ display:block; }
+  .result .score-num{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 64px;
+    font-weight: 700;
+    margin: 6px 0 2px;
+    background: linear-gradient(135deg, var(--accent-amber), var(--accent-teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .result .score-sub{ color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+  .result .verdict{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .result .verdict-desc{
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 440px;
+    margin-left:auto; margin-right:auto;
+  }
+  .breakdown{
+    display:flex; gap:12px; margin-bottom:24px;
+  }
+  .breakdown .b-item{
+    flex:1; background: var(--surface-2); border-radius: 14px; padding: 14px;
+    border: 1px solid var(--border);
+  }
+  .breakdown .b-num{ font-family:'Space Grotesk', sans-serif; font-size:22px; font-weight:700; }
+  .breakdown .b-label{ font-size: 12px; color: var(--text-muted); margin-top:4px; }
+
+  .retry-btn{
+    padding: 14px 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor:pointer;
+    transition: border-color .2s ease;
+  }
+  .retry-btn:hover{ border-color: var(--accent-amber); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
 </head>
 <body>
 
-<div class="quiz-container">
-    <h2>Latihan Soal Modul 6:<br>Model Bisnis di Era Digital</h2>
-    <div id="quiz-area">
-        <div id="question-text" class="question">Memuat pertanyaan...</div>
-        <ul id="options-area" class="options"></ul>
-        <div id="feedback-area" class="feedback"></div>
-        <button id="next-btn" class="next-btn" onclick="nextQuestion()">Pertanyaan Selanjutnya</button>
+<div class="app">
+  <p class="eyebrow">MKWI4203 · Kewirausahaan di Era Digital</p>
+  <h1>Modul 6 — Model Bisnis di Era Digital</h1>
+
+  <div class="progress-track" id="progressTrack"></div>
+  <div class="progress-label">
+    <span id="progressText">Soal 1 dari 20</span>
+    <span id="scoreText">Skor: 0</span>
+  </div>
+
+  <div class="card" id="quizCard">
+    <p class="q-meta" id="qMeta">Kegiatan Belajar 1</p>
+    <p class="q-text" id="qText"></p>
+    <div class="options" id="optionsContainer"></div>
+    <div class="explain" id="explainBox"></div>
+    <button class="next-btn" id="nextBtn">Lanjut →</button>
+  </div>
+
+  <div class="card result" id="resultCard">
+    <p class="eyebrow" style="text-align:center;">Hasil Modul 6</p>
+    <div class="score-num" id="finalScore">0/20</div>
+    <p class="score-sub" id="finalPercent">0%</p>
+    <p class="verdict" id="verdictTitle"></p>
+    <p class="verdict-desc" id="verdictDesc"></p>
+    <div class="breakdown">
+      <div class="b-item">
+        <div class="b-num" id="kb1Score">0/10</div>
+        <div class="b-label">KB1 · Konsep Business Model Canvas</div>
+      </div>
+      <div class="b-item">
+        <div class="b-num" id="kb2Score">0/10</div>
+        <div class="b-label">KB2 · Jenis Model Bisnis Digital</div>
+      </div>
     </div>
-    <div id="score-area" class="score-container">
-        <h3 id="final-score"></h3>
-        <button class="next-btn" style="display:block;" onclick="location.reload()">Ulangi Kuis</button>
-    </div>
+    <button class="retry-btn" id="retryBtn">Ulangi Kuis Modul 6</button>
+  </div>
 </div>
 
 <script>
-    const questions = [
-        {
-            question: "Spotify menawarkan akses mendengarkan musik secara gratis dengan diselingi iklan, namun pelanggan harus membayar untuk versi tanpa iklan dan fitur unduh. Model bisnis ini disebut...",
-            options: [
-                { text: "E-Commerce", correct: false, rationale: "E-commerce adalah model penjualan barang retail secara online." },
-                { text: "Freemium", correct: true, rationale: "Freemium merupakan gabungan 'Free' (gratis untuk fitur dasar) dan 'Premium' (berbayar untuk fitur tambahan)." },
-                { text: "Dropshipping", correct: false, rationale: "Ini adalah model rantai pasok untuk penjualan barang fisik." },
-                { text: "On-Demand", correct: false, rationale: "On-demand berfokus pada penyediaan layanan instan saat itu juga, seperti ojek online." }
-            ]
-        },
-        {
-            question: "Kekuatan utama dari model bisnis platform (seperti Tokopedia, Airbnb, Gojek) sangat bergantung pada terjadinya 'Network Effect' (Efek Jaringan). Maksud dari efek ini adalah...",
-            options: [
-                { text: "Nilai platform akan semakin meningkat jika jumlah penggunanya (baik penjual maupun pembeli) semakin banyak", correct: true, rationale: "Makin banyak pembeli, makin banyak penjual yang tertarik bergabung, dan sebaliknya. Siklus ini menciptakan nilai." },
-                { text: "Perusahaan harus membangun jaringan infrastruktur kabel internet sendiri", correct: false, rationale: "Efek jaringan berkaitan dengan jumlah pengguna (user base), bukan infrastruktur perangkat keras." },
-                { text: "Sistem keamanan siber jaringan yang tidak bisa ditembus", correct: false, rationale: "Ini merujuk pada cyber security, bukan network effect pasar." },
-                { text: "Penjualan produk secara berjenjang ke bawah", correct: false, rationale: "Pernyataan ini mendeskripsikan model Multi-Level Marketing (MLM)." }
-            ]
-        },
-        {
-            question: "Dalam Business Model Canvas (BMC), komponen yang menjelaskan bagaimana perusahaan berkomunikasi dan menjangkau segmen pelanggannya untuk menyampaikan nilai tambah (Value Proposition) disebut blok...",
-            options: [
-                { text: "Customer Segments", correct: false, rationale: "Ini mendefinisikan siapa target pasarnya." },
-                { text: "Key Activities", correct: false, rationale: "Ini menjelaskan kegiatan utama yang harus dilakukan perusahaan agar model bisnisnya berjalan." },
-                { text: "Channels", correct: true, rationale: "Saluran (Channels) adalah titik sentuh pelanggan yang memainkan peran penting dalam pengalaman pelanggan." },
-                { text: "Revenue Streams", correct: false, rationale: "Ini merujuk pada dari mana perusahaan mendapatkan uang." }
-            ]
-        },
-        {
-            question: "Netflix dan Microsoft Office 365 mengenakan biaya tetap secara berkala (bulanan/tahunan) kepada penggunanya untuk mempertahankan akses ke layanan. Model bisnis ini dikenal sebagai...",
-            options: [
-                { text: "Subscription (Berlangganan)", correct: true, rationale: "Model berlangganan memastikan aliran pendapatan berulang (recurring revenue) yang stabil bagi perusahaan." },
-                { text: "Affiliate Marketing", correct: false, rationale: "Model afiliasi mendapat komisi dari mempromosikan produk pihak ketiga." },
-                { text: "Bait and Hook", correct: false, rationale: "Menjual produk utama dengan sangat murah, lalu mengunci pelanggan untuk membeli isi ulangnya (seperti alat cukur dan siletnya)." },
-                { text: "Crowdfunding", correct: false, rationale: "Mengumpulkan dana dari banyak orang untuk memulai sebuah proyek." }
-            ]
-        },
-        {
-            question: "Model bisnis 'Long Tail' (Ekor Panjang) menjadi sangat memungkinkan di era digital. Konsep utama dari model bisnis ini adalah...",
-            options: [
-                { text: "Hanya menjual satu jenis produk unggulan (bestseller) dalam jumlah yang sangat masif", correct: false, rationale: "Fokus pada bestseller adalah kebalikan dari model long tail." },
-                { text: "Menjual berbagai macam produk 'niche' (spesifik/kurang populer) dalam volume kecil, namun menawarkan variasi yang sangat banyak", correct: true, rationale: "Di era digital, biaya penyimpanan produk digital/katalog sangat murah, sehingga menguntungkan untuk menjual jutaan produk tidak populer dalam kuantitas sedikit (seperti buku langka di Amazon)." },
-                { text: "Menjalin rantai pasokan distribusi yang sangat panjang dari pabrik ke konsumen akhir", correct: false, rationale: "Ini merujuk pada masalah efisiensi rantai pasok konvensional." },
-                { text: "Menunda peluncuran produk inovatif dalam jangka waktu yang panjang", correct: false, rationale: "Tidak ada hubungannya dengan penundaan peluncuran produk." }
-            ]
-        }
-    ];
+const questions = [
+  // ===== KB1: Konsep Dasar & Business Model Canvas (1-10) =====
+  {
+    kb: 1,
+    q: "Secara konseptual, apa yang dimaksud dengan 'Model Bisnis' (Business Model)?",
+    options: [
+      "Sebuah dokumen legal yang berisi rincian modal dan kepemilikan saham perusahaan",
+      "Gambaran rasional tentang bagaimana sebuah organisasi menciptakan, memberikan, dan menangkap nilai (value) secara ekonomi",
+      "Strategi periklanan yang dibuat oleh divisi pemasaran",
+      "Daftar kompetitor yang harus dikalahkan di pasar global"
+    ],
+    correct: 1,
+    explain: "Model bisnis pada dasarnya adalah cetak biru (blueprint) mengenai bagaimana perusahaan menghasilkan uang dengan cara memberikan nilai tambah kepada pelanggannya."
+  },
+  {
+    kb: 1,
+    q: "Dalam Business Model Canvas (BMC), blok yang mendeskripsikan kelompok orang atau organisasi spesifik yang ingin dijangkau dan dilayani adalah...",
+    options: [
+      "Value Propositions",
+      "Channels",
+      "Customer Segments (Segmen Pelanggan)",
+      "Key Partners"
+    ],
+    correct: 2,
+    explain: "Customer Segments adalah blok fondasi pertama dalam BMC. Tanpa pelanggan yang jelas dan spesifik (menguntungkan), tidak ada bisnis yang bisa bertahan hidup."
+  },
+  {
+    kb: 1,
+    q: "Apa fungsi utama dari blok 'Value Proposition' (Proposisi Nilai) di dalam Business Model Canvas?",
+    options: [
+      "Menguraikan aset-aset berwujud milik perusahaan",
+      "Menjelaskan produk atau layanan unik yang menciptakan nilai tambah dan memecahkan masalah pelanggan spesifik",
+      "Menentukan harga jual barang termurah di pasaran",
+      "Memetakan saluran distribusi logistik"
+    ],
+    correct: 1,
+    explain: "Value proposition adalah alasan mengapa pelanggan memilih perusahaan Anda daripada kompetitor; produk/jasa tersebut harus bisa menyelesaikan masalah atau memenuhi kebutuhan (pain/gain) pelanggan."
+  },
+  {
+    kb: 1,
+    q: "Perbedaan mendasar antara model bisnis konvensional (Pipeline/Linier) dengan model bisnis digital berbasis Platform adalah...",
+    options: [
+      "Pipeline memfasilitasi pertukaran antar pengguna, sedangkan platform membuat barang sendiri di pabrik",
+      "Pipeline hanya menggunakan internet lambat, platform menggunakan internet cepat",
+      "Pipeline menciptakan aliran nilai secara linier dari produsen ke konsumen, sedangkan platform bertindak sebagai fasilitator yang mempertemukan pihak yang saling membutuhkan",
+      "Pipeline tidak membutuhkan pelanggan, platform sangat bergantung pada pelanggan"
+    ],
+    correct: 2,
+    explain: "Bisnis pipeline (seperti pabrik sepatu) memproduksi lalu menjual barang di ujung rantai. Platform (seperti Tokopedia/Airbnb) tidak memproduksi barang, melainkan menciptakan nilai dengan menghubungkan penjual dan pembeli."
+  },
+  {
+    kb: 1,
+    q: "Blok 'Revenue Streams' dalam BMC berfungsi untuk menjelaskan tentang...",
+    options: [
+      "Urusan perizinan dan pajak perusahaan",
+      "Biaya pengeluaran bulanan operasional",
+      "Alur kas (cash flow) yang menunjukkan bagaimana perusahaan menghasilkan uang dari setiap segmen pelanggan",
+      "Strategi merekrut pegawai baru"
+    ],
+    correct: 2,
+    explain: "Revenue Streams (Arus Pendapatan) adalah urat nadi bisnis. Ini menjelaskan mekanisme bagaimana uang masuk (misal: penjualan langsung, biaya langganan, lisensi, sewa)."
+  },
+  {
+    kb: 1,
+    q: "Alasan mendasar mengapa perusahaan di era digital dituntut untuk terus mengevaluasi dan melakukan 'Inovasi Model Bisnis' adalah...",
+    options: [
+      "Karena siklus hidup produk semakin pendek dan preferensi konsumen sangat cepat berubah akibat disrupsi teknologi",
+      "Karena pemerintah mewajibkan perubahan nama perusahaan setiap lima tahun",
+      "Karena karyawan akan cepat bosan jika model bisnisnya tetap",
+      "Karena perusahaan ingin menurunkan kualitas layanannya"
+    ],
+    correct: 0,
+    explain: "Di era VUCA (cepat berubah dan disrupsi), model bisnis yang sukses hari ini bisa usang besok. Inovasi model bisnis diperlukan agar perusahaan tetap relevan dengan zaman."
+  },
+  {
+    kb: 1,
+    q: "Dalam perusahaan digital murni (seperti Google atau Meta), komponen 'Key Resources' (Sumber Daya Utama) biasanya bergeser dari dominasi aset fisik menjadi dominasi...",
+    options: [
+      "Mesin perakitan mekanis berat",
+      "Armada logistik truk yang besar",
+      "Gedung pabrik dan gudang penyimpanan tanah",
+      "Aset intelektual, kekuatan algoritma, dan penguasaan big data"
+    ],
+    correct: 3,
+    explain: "Bisnis digital sangat 'ringan aset tetap'. Mereka tidak butuh ratusan pabrik fisik, melainkan talenta programmer, hak cipta algoritma cerdas (AI), dan basis data pengguna yang masif."
+  },
+  {
+    kb: 1,
+    q: "Blok 'Channels' (Saluran) pada Business Model Canvas menjelaskan tentang bagaimana perusahaan...",
+    options: [
+      "Meminjam uang dari lembaga perbankan",
+      "Berkomunikasi (promosi), mendistribusikan, dan menjual proposisi nilainya agar sampai ke tangan segmen pelanggan",
+      "Mencari mitra pasokan bahan baku (supplier)",
+      "Menentukan tingkat gaji pegawai"
+    ],
+    correct: 1,
+    explain: "Saluran adalah titik sentuh (touchpoints) yang memainkan peran penting dalam pengalaman pelanggan. Contoh: website, aplikasi, toko fisik, agen penjualan."
+  },
+  {
+    kb: 1,
+    q: "Di era bisnis digital, blok 'Customer Relationships' (Hubungan Pelanggan) seringkali diotomatisasi. Contoh paling tepat dari penerapan ini adalah...",
+    options: [
+      "Manajer yang harus menemui pelanggan satu per satu secara langsung",
+      "Penggunaan agen manusia untuk menelpon pelanggan (cold calling)",
+      "Pemanfaatan Chatbot berbasis AI untuk melayani pertanyaan dasar atau keluhan pelanggan selama 24/7",
+      "Mengirim brosur via pos surat konvensional"
+    ],
+    correct: 2,
+    explain: "Hubungan pelanggan otomasi digital (seperti Chatbot AI) memungkinkan perusahaan melayani ribuan pelanggan secara bersamaan, instan, efisien biaya, dan tanpa batas waktu operasional."
+  },
+  {
+    kb: 1,
+    q: "Pergeseran paradigma yang paling nyata dalam model bisnis digital adalah transisi dari model 'Kepemilikan' (Ownership) menjadi model 'Akses' (Access). Contohnya adalah...",
+    options: [
+      "Konsumen lebih memilih membeli DVD film fisik agar bisa dikoleksi di lemari",
+      "Konsumen tidak lagi membeli lagu dalam bentuk kaset/CD, melainkan berlangganan akses ke puluhan juta lagu melalui Spotify",
+      "Perusahaan wajib memiliki sendiri ribuan server fisik di kantor pusat",
+      "Pembeli menuntut sertifikat kepemilikan mutlak atas semua software yang digunakan"
+    ],
+    correct: 1,
+    explain: "Konsumen modern lebih mementingkan manfaat dari 'mengakses' suatu nilai tanpa direpotkan beban perawatan 'memiliki' aset fisiknya (seperti model layanan streaming Netflix/Spotify)."
+  },
 
-    let currentQIndex = 0;
-    let score = 0;
+  // ===== KB2: Jenis-jenis Model Bisnis Digital (11-20) =====
+  {
+    kb: 2,
+    q: "Spotify dan Zoom menawarkan akses layanan dasar secara cuma-cuma, namun pelanggan wajib membayar (upgrade) jika ingin menikmati fitur lanjutan atau menghilangkan iklan. Model bisnis ini disebut...",
+    options: [
+      "E-Commerce Retail",
+      "Freemium (Free + Premium)",
+      "Dropshipping",
+      "On-Demand Services"
+    ],
+    correct: 1,
+    explain: "Freemium merupakan gabungan 'Free' dan 'Premium'. Versi gratis berfungsi sebagai magnet untuk mengakuisisi pengguna sebanyak-banyaknya, sebelum mengonversi sebagian pengguna tersebut menjadi pelanggan berbayar."
+  },
+  {
+    kb: 2,
+    q: "Platform video seperti Netflix dan perangkat lunak Microsoft 365 menggunakan model bisnis...",
+    options: [
+      "Bait and Hook",
+      "Crowdfunding",
+      "Subscription (Berlangganan)",
+      "Affiliate Marketing"
+    ],
+    correct: 2,
+    explain: "Dalam model Subscription, pengguna membayar biaya berlangganan tetap (bulanan/tahunan) untuk mempertahankan akses ke produk/jasa. Model ini menjamin pendapatan berulang (recurring revenue) bagi perusahaan."
+  },
+  {
+    kb: 2,
+    q: "Model bisnis rantai pasok digital yang memungkinkan wirausaha menjual barang tanpa perlu menyetok inventaris, memproduksi barang, atau mengemas pengiriman secara fisik disebut...",
+    options: [
+      "Dropshipping",
+      "Peer-to-Peer Lending",
+      "Social Commerce",
+      "Multi-sided Platform"
+    ],
+    correct: 0,
+    explain: "Dalam Dropshipping, penjual hanya meneruskan pesanan pelanggan beserta detail pengirimannya kepada produsen atau grosir, yang kemudian akan mengirimkan barang secara langsung atas nama penjual."
+  },
+  {
+    kb: 2,
+    q: "Perusahaan penyedia aplikasi mobilitas seperti Gojek atau Grab sangat identik dengan model bisnis...",
+    options: [
+      "B2B (Business to Business)",
+      "Subscription-only",
+      "On-Demand (Sesuai Permintaan)",
+      "Freemium"
+    ],
+    correct: 2,
+    explain: "On-Demand Business Model dirancang untuk menyediakan layanan barang atau jasa yang secara instan merespons pesanan dan kebutuhan real-time pengguna saat itu juga."
+  },
+  {
+    kb: 2,
+    q: "Konsep 'Long Tail' (Ekor Panjang) menjadi sangat menguntungkan di era digital (seperti Amazon). Konsep ini berfokus pada strategi...",
+    options: [
+      "Menjual satu atau dua jenis produk unggulan bestseller dalam jumlah luar biasa besar",
+      "Menjual berbagai variasi produk spesifik (niche) yang kurang populer secara satuan, karena biaya penyimpanan digitalnya sangat murah, sehingga jika digabung hasilnya menyaingi produk bestseller",
+      "Memperpanjang masa tenggang pembayaran pelanggan hingga berbulan-bulan",
+      "Menunda perilisan teknologi inovatif agar perusahaan aman"
+    ],
+    correct: 1,
+    explain: "Digitalisasi memangkas biaya rak toko fisik menjadi nyaris nol. Membuka peluang menjual jutaan buku langka (niche) yang penjualannya sedikit-sedikit, tapi berkontribusi sangat besar secara kumulatif."
+  },
+  {
+    kb: 2,
+    q: "Model bisnis 'Multi-sided Platform' (Pasar Banyak Sisi) yang diterapkan oleh marketplace seperti Shopee menciptakan nilainya dengan cara...",
+    options: [
+      "Memproduksi barang termurah untuk mematikan pesaing UKM",
+      "Memfasilitasi interaksi dan transaksi langsung yang efisien antara dua kelompok atau lebih (misal: penjual merdeka dan calon pembeli)",
+      "Menyewa ribuan agen multi-level marketing (MLM)",
+      "Melakukan monopoli kepemilikan seluruh barang yang dijual di web"
+    ],
+    correct: 1,
+    explain: "Platform tidak membuat barang. Ia bertindak sebagai makelar penghubung yang menekan biaya transaksi, memberikan keamanan pembayaran, dan mengkurasi penjual agar pembeli merasa aman."
+  },
+  {
+    kb: 2,
+    q: "Kunci hidup matinya sebuah platform (seperti Airbnb atau Tokopedia) sangat bergantung pada fenomena yang disebut 'Network Effect' (Efek Jaringan). Maksudnya adalah...",
+    options: [
+      "Semakin banyak pengguna bergabung, nilai platform tersebut akan semakin tinggi dan menarik bagi pihak lain di ekosistem tersebut",
+      "Platform harus membeli perangkat jaringan internet satelit milik sendiri",
+      "Struktur organisasi korporasi harus berbasis sistem jaringan berjenjang",
+      "Efek domino kerugian perusahaan jika sistemnya diretas oleh hacker"
+    ],
+    correct: 0,
+    explain: "Network Effect berarti pembeli datang karena banyak penjual di sana. Penjual datang karena banyak pembeli di sana. Semakin ramai jaringannya, semakin berharga aplikasi tersebut."
+  },
+  {
+    kb: 2,
+    q: "Di era digital, adaptasi dari model bisnis 'Bait and Hook' (Umpan dan Kail)—seperti mesin cukur yang dijual murah tetapi siletnya mahal—sering diterapkan di industri video game melalui praktik...",
+    options: [
+      "Menjual konsol game (perangkat keras) dengan margin rugi, lalu mengambil keuntungan berlipat ganda dari royalti penjualan kaset game (perangkat lunak)",
+      "Membagikan game bajakan secara cuma-cuma",
+      "Mewajibkan pemain untuk membeli saham perusahaan pengembang",
+      "Memberikan gaji bulanan kepada para pemain yang memenangkan turnamen"
+    ],
+    correct: 0,
+    explain: "Konsol (seperti PlayStation/Xbox) sering dijual mendekati harga modal (sebagai umpan/bait) agar pelanggan terkunci (locked-in) dan terus membeli kaset game/langganan PS Plus (sebagai kail/hook)."
+  },
+  {
+    kb: 2,
+    q: "Ensiklopedia raksasa online Wikipedia dikelola bukan oleh pegawai bergaji, melainkan oleh sukarelawan dari seluruh dunia. Ini adalah contoh keberhasilan model bisnis...",
+    options: [
+      "Micro-franchising",
+      "Crowdsourcing",
+      "Dropshipping",
+      "Business to Government (B2G)"
+    ],
+    correct: 1,
+    explain: "Crowdsourcing adalah model di mana pekerjaan, ide, atau konten dikumpulkan (bersumber) dari partisipasi dan kontribusi komunitas online yang luas (kerumunan/crowd), alih-alih karyawan internal."
+  },
+  {
+    kb: 2,
+    q: "Dalam model keuangan digital 'Peer-to-Peer (P2P) Lending', fungsi utama dari platform digital (seperti KoinWorks atau Amartha) adalah...",
+    options: [
+      "Meminjamkan uang dari brankas pribadi perusahaan platform itu sendiri kepada nasabah",
+      "Menghubungkan secara langsung individu/UMKM yang membutuhkan pinjaman (Borrower) dengan individu/institusi yang bersedia memberikan dana pinjaman (Lender)",
+      "Mencetak uang elektronik yang diatur oleh Bank Indonesia",
+      "Menyita aset properti nasabah yang gagal bayar tanpa prosedur hukum"
+    ],
+    correct: 1,
+    explain: "Platform P2P Lending hanya bertindak sebagai makelar fasilitator (marketplace uang). Mereka melakukan penilaian kredit (credit scoring) lalu mempertemukan peminjam dengan pendana tanpa harus melewati bank konvensional."
+  }
+];
 
-    function loadQuestion() {
-        const q = questions[currentQIndex];
-        document.getElementById('question-text').innerText = (currentQIndex + 1) + ". " + q.question;
-        const optionsArea = document.getElementById('options-area');
-        optionsArea.innerHTML = '';
-        document.getElementById('feedback-area').style.display = 'none';
-        document.getElementById('next-btn').style.display = 'none';
+let current = 0;
+let score = 0;
+let locked = false;
+const answers = new Array(questions.length).fill(null); 
 
-        q.options.forEach((opt, index) => {
-            const li = document.createElement('li');
-            const btn = document.createElement('button');
-            btn.innerText = opt.text;
-            btn.onclick = () => checkAnswer(index, btn);
-            li.appendChild(btn);
-            optionsArea.appendChild(li);
-        });
+const progressTrack = document.getElementById('progressTrack');
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const qMeta = document.getElementById('qMeta');
+const qText = document.getElementById('qText');
+const optionsContainer = document.getElementById('optionsContainer');
+const explainBox = document.getElementById('explainBox');
+const nextBtn = document.getElementById('nextBtn');
+const quizCard = document.getElementById('quizCard');
+const resultCard = document.getElementById('resultCard');
+
+function buildProgress(){
+  progressTrack.innerHTML = '';
+  questions.forEach((_, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'progress-bar';
+    const h = 30 + (i / (questions.length - 1)) * 70;
+    bar.style.height = h + '%';
+    progressTrack.appendChild(bar);
+  });
+}
+
+function refreshProgress(){
+  const bars = progressTrack.children;
+  for(let i=0;i<bars.length;i++){
+    bars[i].classList.remove('current','correct','wrong');
+    if(answers[i] === 'correct') bars[i].classList.add('correct');
+    else if(answers[i] === 'wrong') bars[i].classList.add('wrong');
+    else if(i === current) bars[i].classList.add('current');
+  }
+  progressText.textContent = `Soal ${current+1} dari ${questions.length}`;
+  scoreText.textContent = `Skor: ${score}`;
+}
+
+function renderQuestion(){
+  locked = false;
+  const item = questions[current];
+  qMeta.textContent = `Kegiatan Belajar ${item.kb}`;
+  qText.textContent = item.q;
+  optionsContainer.innerHTML = '';
+  explainBox.classList.remove('show');
+  explainBox.innerHTML = '';
+  nextBtn.classList.remove('show');
+  nextBtn.textContent = current === questions.length - 1 ? 'Lihat Hasil →' : 'Lanjut →';
+
+  item.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="tag">${String.fromCharCode(65+idx)}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => selectOption(idx, btn));
+    optionsContainer.appendChild(btn);
+  });
+
+  refreshProgress();
+}
+
+function selectOption(idx, btnEl){
+  if(locked) return;
+  locked = true;
+  const item = questions[current];
+  const allBtns = optionsContainer.querySelectorAll('.option');
+  allBtns.forEach(b => b.classList.add('locked'));
+
+  if(idx === item.correct){
+    btnEl.classList.add('correct');
+    answers[current] = 'correct';
+    score++;
+  } else {
+    btnEl.classList.add('wrong');
+    allBtns[item.correct].classList.add('correct');
+    answers[current] = 'wrong';
+  }
+
+  explainBox.innerHTML = `<strong>${idx === item.correct ? 'Benar.' : 'Kurang tepat.'}</strong> ${item.explain}`;
+  explainBox.classList.add('show');
+  nextBtn.classList.add('show');
+  refreshProgress();
+}
+
+nextBtn.addEventListener('click', () => {
+  if(current < questions.length - 1){
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  quizCard.style.display = 'none';
+  resultCard.classList.add('show');
+
+  document.getElementById('finalScore').textContent = `${score}/${questions.length}`;
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('finalPercent').textContent = `${pct}% jawaban benar`;
+
+  let kb1 = 0, kb2 = 0;
+  questions.forEach((q, i) => {
+    if(answers[i] === 'correct'){
+      if(q.kb === 1) kb1++; else kb2++;
     }
+  });
+  document.getElementById('kb1Score').textContent = `${kb1}/10`;
+  document.getElementById('kb2Score').textContent = `${kb2}/10`;
 
-    function checkAnswer(selectedIndex, btn) {
-        const q = questions[currentQIndex];
-        const isCorrect = q.options[selectedIndex].correct;
-        const buttons = document.querySelectorAll('.options button');
-        
-        buttons.forEach(b => b.disabled = true);
+  let title, desc;
+  if(score >= 18){
+    title = 'Master Model Bisnis';
+    desc = 'Pemahaman Anda soal Business Model Canvas (BMC) dan variasi model bisnis digital sudah setingkat CEO Startup. Hebat!';
+  } else if(score >= 14){
+    title = 'Konsultan Strategi Menengah';
+    desc = 'Bagus! Anda sudah menangkap pola pergeseran cara bisnis menghasilkan uang di era digital. Sedikit lagi menuju sempurna.';
+  } else if(score >= 10){
+    title = 'Perlu Revisi Canvas';
+    desc = 'Anda masih tertukar antara beberapa konsep dasar BMC dan istilah model bisnis spesifik. Coba review lagi teori Freemium dan Subscription.';
+  } else {
+    title = 'Kembali ke Papan Tulis';
+    desc = 'Jangan patah semangat! Mari kita buka kembali Modul 6 dan pahami 9 blok bangunan utama Business Model Canvas dari awal.';
+  }
+  document.getElementById('verdictTitle').textContent = title;
+  document.getElementById('verdictDesc').textContent = desc;
+}
 
-        if (isCorrect) {
-            btn.classList.add('btn-correct');
-            score++;
-            showFeedback("Benar! " + q.options[selectedIndex].rationale, "correct");
-        } else {
-            btn.classList.add('btn-wrong');
-            const correctIndex = q.options.findIndex(o => o.correct);
-            buttons[correctIndex].classList.add('btn-correct');
-            showFeedback("Salah. " + q.options[selectedIndex].rationale, "wrong");
-        }
-        document.getElementById('next-btn').style.display = 'block';
-    }
+document.getElementById('retryBtn').addEventListener('click', () => {
+  current = 0; score = 0; answers.fill(null);
+  resultCard.classList.remove('show');
+  quizCard.style.display = 'block';
+  renderQuestion();
+});
 
-    function showFeedback(text, type) {
-        const fb = document.getElementById('feedback-area');
-        fb.innerText = text;
-        fb.className = 'feedback ' + type;
-        fb.style.display = 'block';
-    }
-
-    function nextQuestion() {
-        currentQIndex++;
-        if (currentQIndex < questions.length) {
-            loadQuestion();
-        } else {
-            document.getElementById('quiz-area').style.display = 'none';
-            document.getElementById('score-area').style.display = 'block';
-            document.getElementById('final-score').innerText = "Skor Anda: " + score + " / " + questions.length;
-        }
-    }
-
-    loadQuestion();
+buildProgress();
+renderQuestion();
 </script>
-
 </body>
 </html>
