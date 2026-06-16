@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis MKWI4203 - Modul 7</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
+        .quiz-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; }
+        .question { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
+        .options { list-style-type: none; padding: 0; }
+        .options li { margin-bottom: 10px; }
+        .options button { width: 100%; padding: 15px; text-align: left; background: #e9ecef; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 1em; transition: 0.3s; }
+        .options button:hover { background: #dce1e6; }
+        .options button:disabled { cursor: not-allowed; }
+        .btn-correct { background: #d4edda !important; border-color: #c3e6cb !important; color: #155724; }
+        .btn-wrong { background: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24; }
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .next-btn { display: none; width: 100%; padding: 15px; margin-top: 20px; background: #17a2b8; color: white; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
+        .next-btn:hover { background: #138496; }
+        .score-container { text-align: center; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h2>Latihan Soal Modul 7:<br>Menerapkan <i>Blue Ocean Strategy</i></h2>
+    <div id="quiz-area">
+        <div id="question-text" class="question">Memuat pertanyaan...</div>
+        <ul id="options-area" class="options"></ul>
+        <div id="feedback-area" class="feedback"></div>
+        <button id="next-btn" class="next-btn" onclick="nextQuestion()">Pertanyaan Selanjutnya</button>
+    </div>
+    <div id="score-area" class="score-container">
+        <h3 id="final-score"></h3>
+        <button class="next-btn" style="display:block;" onclick="location.reload()">Ulangi Kuis</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "Konsep utama dari 'Blue Ocean Strategy' (Strategi Samudra Biru) adalah...",
+            options: [
+                { text: "Mengalahkan kompetitor dengan menurunkan harga secara drastis", correct: false, rationale: "Ini adalah strategi 'Red Ocean' yang berdarah-darah karena perang harga." },
+                { text: "Menciptakan ruang pasar baru yang belum ada pesaingnya sehingga persaingan menjadi tidak relevan", correct: true, rationale: "Blue Ocean fokus pada inovasi nilai untuk membuka permintaan baru di pasar yang belum tersentuh." },
+                { text: "Memfokuskan seluruh sumber daya untuk merebut pangsa pasar dari pemimpin industri", correct: false, rationale: "Merebut pangsa pasar yang sudah ada adalah ciri khas Red Ocean." },
+                { text: "Membangun monopoli pasar melalui akuisisi perusahaan lawan", correct: false, rationale: "Blue Ocean dibangun lewat inovasi mandiri, bukan sekadar membeli kompetitor." }
+            ]
+        },
+        {
+            question: "Dalam kanvas strategi (Strategy Canvas) Blue Ocean, Inovasi Nilai (Value Innovation) tercipta ketika perusahaan mampu menyelaraskan dua hal secara bersamaan, yaitu...",
+            options: [
+                { text: "Peningkatan nilai bagi pembeli (diferensiasi) dan penurunan biaya (low cost)", correct: true, rationale: "Inovasi nilai mendobrak dogma bahwa diferensiasi pasti mahal; strategi ini mengejar nilai tinggi dengan biaya rendah sekaligus." },
+                { text: "Peningkatan kualitas produk dan peningkatan harga jual", correct: false, rationale: "Ini sekadar strategi premium biasa, bukan inovasi nilai." },
+                { text: "Penurunan biaya produksi dan penurunan kualitas bahan baku", correct: false, rationale: "Ini hanya strategi pemotongan biaya yang mengorbankan nilai konsumen." },
+                { text: "Peningkatan anggaran pemasaran dan ekspansi pasar global", correct: false, rationale: "Ekspansi tanpa nilai yang unik tetap akan masuk ke samudra merah." }
+            ]
+        },
+        {
+            question: "Kerangka Kerja Empat Langkah (Four Actions Framework) dalam Blue Ocean Strategy terdiri dari...",
+            options: [
+                { text: "Plan, Do, Check, Action", correct: false, rationale: "Ini adalah siklus manajemen kualitas Deming (PDCA)." },
+                { text: "Strengths, Weaknesses, Opportunities, Threats", correct: false, rationale: "Ini adalah kerangka analisis SWOT." },
+                { text: "Eliminate, Reduce, Raise, Create (Hapuskan, Kurangi, Tingkatkan, Ciptakan)", correct: true, rationale: "Kerangka ERRC digunakan untuk merekonstruksi elemen-elemen nilai pembeli dan merancang kurva nilai yang baru." },
+                { text: "Product, Price, Place, Promotion", correct: false, rationale: "Ini adalah bauran pemasaran tradisional (Marketing Mix 4P)." }
+            ]
+        },
+        {
+            question: "Manakah dari situasi berikut yang paling menggambarkan lingkungan 'Red Ocean' (Samudra Merah)?",
+            options: [
+                { text: "Batasan industri sudah didefinisikan dan diterima dengan jelas, serta aturan persaingan sudah dimaklumi", correct: true, rationale: "Di samudra merah, pasar sudah sesak dan perusahaan saling berebut porsi kue yang sama." },
+                { text: "Belum ada aturan industri yang baku karena industrinya baru saja terbentuk", correct: false, rationale: "Kondisi tanpa aturan baku justru merupakan ciri samudra biru." },
+                { text: "Fokus utama perusahaan adalah menciptakan permintaan baru", correct: false, rationale: "Menciptakan permintaan baru adalah fokus samudra biru." },
+                { text: "Persaingan dianggap tidak relevan oleh para pelaku usaha", correct: false, rationale: "Persaingan justru sangat sengit dan mematikan di samudra merah." }
+            ]
+        },
+        {
+            question: "Dalam menerapkan kerangka kerja 'Eliminate' (Hapuskan) pada Blue Ocean Strategy, perusahaan harus...",
+            options: [
+                { text: "Menghapuskan seluruh produk lama dan menggantinya dengan yang baru", correct: false, rationale: "Bukan menghapus produk, tetapi menghapus elemen tertentu yang tidak bernilai." },
+                { text: "Meniadakan faktor-faktor yang selama ini dianggap lumrah dan selalu dipertandingkan oleh industri, padahal tidak memberikan nilai lebih bagi konsumen", correct: true, rationale: "Menghapus elemen usang ini akan secara drastis menurunkan struktur biaya perusahaan." },
+                { text: "Memberhentikan karyawan yang tidak mencapai target penjualan", correct: false, rationale: "Ini masalah operasional SDM, bukan strategi penciptaan pasar." },
+                { text: "Menghapus target keuntungan demi kepuasan pelanggan", correct: false, rationale: "Blue ocean tetap bertujuan mencari profitabilitas yang tinggi." }
+            ]
+        }
+    ];
+
+    let currentQIndex = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const q = questions[currentQIndex];
+        document.getElementById('question-text').innerText = (currentQIndex + 1) + ". " + q.question;
+        const optionsArea = document.getElementById('options-area');
+        optionsArea.innerHTML = '';
+        document.getElementById('feedback-area').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+
+        q.options.forEach((opt, index) => {
+            const li = document.createElement('li');
+            const btn = document.createElement('button');
+            btn.innerText = opt.text;
+            btn.onclick = () => checkAnswer(index, btn);
+            li.appendChild(btn);
+            optionsArea.appendChild(li);
+        });
+    }
+
+    function checkAnswer(selectedIndex, btn) {
+        const q = questions[currentQIndex];
+        const isCorrect = q.options[selectedIndex].correct;
+        const buttons = document.querySelectorAll('.options button');
+        
+        buttons.forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+            btn.classList.add('btn-correct');
+            score++;
+            showFeedback("Benar! " + q.options[selectedIndex].rationale, "correct");
+        } else {
+            btn.classList.add('btn-wrong');
+            const correctIndex = q.options.findIndex(o => o.correct);
+            buttons[correctIndex].classList.add('btn-correct');
+            showFeedback("Salah. " + q.options[selectedIndex].rationale, "wrong");
+        }
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function showFeedback(text, type) {
+        const fb = document.getElementById('feedback-area');
+        fb.innerText = text;
+        fb.className = 'feedback ' + type;
+        fb.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQIndex++;
+        if (currentQIndex < questions.length) {
+            loadQuestion();
+        } else {
+            document.getElementById('quiz-area').style.display = 'none';
+            document.getElementById('score-area').style.display = 'block';
+            document.getElementById('final-score').innerText = "Skor Anda: " + score + " / " + questions.length;
+        }
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>

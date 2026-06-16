@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis MKWI4203 - Modul 9</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
+        .quiz-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; }
+        .question { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
+        .options { list-style-type: none; padding: 0; }
+        .options li { margin-bottom: 10px; }
+        .options button { width: 100%; padding: 15px; text-align: left; background: #e9ecef; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 1em; transition: 0.3s; }
+        .options button:hover { background: #dce1e6; }
+        .options button:disabled { cursor: not-allowed; }
+        .btn-correct { background: #d4edda !important; border-color: #c3e6cb !important; color: #155724; }
+        .btn-wrong { background: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24; }
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .next-btn { display: none; width: 100%; padding: 15px; margin-top: 20px; background: #e83e8c; color: white; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
+        .next-btn:hover { background: #c23375; }
+        .score-container { text-align: center; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h2>Latihan Soal Modul 9:<br>Pemasaran di Era Digital</h2>
+    <div id="quiz-area">
+        <div id="question-text" class="question">Memuat pertanyaan...</div>
+        <ul id="options-area" class="options"></ul>
+        <div id="feedback-area" class="feedback"></div>
+        <button id="next-btn" class="next-btn" onclick="nextQuestion()">Pertanyaan Selanjutnya</button>
+    </div>
+    <div id="score-area" class="score-container">
+        <h3 id="final-score"></h3>
+        <button class="next-btn" style="display:block;" onclick="location.reload()">Ulangi Kuis</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "Keunggulan absolut dari Digital Marketing dibandingkan dengan Pemasaran Konvensional (seperti pasang iklan di baliho atau koran) adalah...",
+            options: [
+                { text: "Bebas dari segala jenis pajak periklanan", correct: false, rationale: "Iklan digital tetap tunduk pada pajak platform dan regulasi negara." },
+                { text: "Sifatnya yang sangat terukur (measurable), di mana setiap klik, interaksi, dan konversi bisa dilacak secara real-time", correct: true, rationale: "Data metrik yang rinci memungkinkan pengiklan menghitung ROI (Return of Investment) secara akurat." },
+                { text: "Harga pembuatannya yang selalu lebih mahal daripada iklan TV", correct: false, rationale: "Iklan digital justru sangat fleksibel dan bisa dimulai dengan anggaran kecil." },
+                { text: "Komunikasinya bersifat satu arah tanpa interaksi", correct: false, rationale: "Digital marketing justru memungkinkan komunikasi dua arah lewat kolom komentar atau pesan langsung." }
+            ]
+        },
+        {
+            question: "Praktik mengoptimalkan halaman website agar muncul di peringkat teratas hasil pencarian Google secara organik (gratis) disebut dengan istilah...",
+            options: [
+                { text: "SEM (Search Engine Marketing)", correct: false, rationale: "SEM melibatkan pembayaran untuk tampil di halaman pencarian (PPC/Pay Per Click)." },
+                { text: "SEO (Search Engine Optimization)", correct: true, rationale: "SEO berfokus pada optimasi kata kunci, kualitas konten, dan struktur web agar disukai algoritma Google secara alami." },
+                { text: "SMM (Social Media Marketing)", correct: false, rationale: "Ini adalah pemasaran di platform media sosial seperti Instagram atau TikTok." },
+                { text: "Affiliate Marketing", correct: false, rationale: "Ini adalah model komisi berbasis rekomendasi." }
+            ]
+        },
+        {
+            question: "Tujuan utama dari strategi 'Content Marketing' (Pemasaran Konten) adalah...",
+            options: [
+                { text: "Melakukan hard-selling secara agresif di setiap postingan", correct: false, rationale: "Hard-selling yang terus menerus justru membuat audiens jenuh dan lari." },
+                { text: "Mendistribusikan brosur cetak di pusat keramaian", correct: false, rationale: "Ini adalah bentuk pemasaran offline/konvensional." },
+                { text: "Menarik dan mempertahankan audiens dengan menciptakan konten yang relevan, bernilai, dan edukatif sebelum akhirnya mendorong aksi pembelian", correct: true, rationale: "Content marketing membangun kepercayaan dan otoritas merek perlahan-lahan melalui konten yang bermanfaat bagi audiens." },
+                { text: "Membeli followers palsu agar akun terlihat kredibel", correct: false, rationale: "Praktik ini sangat dilarang dan merusak reputasi merek (black hat marketing)." }
+            ]
+        },
+        {
+            question: "Jika Anda mengunjungi sebuah website e-commerce untuk melihat sepatu, lalu iklan sepatu tersebut terus 'mengikuti' Anda di website lain atau media sosial yang Anda buka, taktik ini disebut...",
+            options: [
+                { text: "Email Spamming", correct: false, rationale: "Spam adalah email massal yang tidak diinginkan." },
+                { text: "Influencer Endorsement", correct: false, rationale: "Ini adalah promosi yang dilakukan oleh tokoh terkenal." },
+                { text: "Retargeting / Remarketing", correct: true, rationale: "Taktik ini menggunakan 'cookies' di browser untuk melacak pengguna dan menampilkan iklan yang relevan untuk mengingatkan mereka agar kembali dan membeli." },
+                { text: "Cold Calling", correct: false, rationale: "Menelpon calon pelanggan potensial yang belum pernah berinteraksi sebelumnya." }
+            ]
+        },
+        {
+            question: "Dalam menganalisis keberhasilan kampanye Social Media Marketing, metrik 'Engagement Rate' (Tingkat Interaksi) mengukur...",
+            options: [
+                { text: "Jumlah interaksi (likes, comments, shares, saves) dibagi dengan jumlah pengikut (followers) atau jumlah jangkauan (reach)", correct: true, rationale: "Engagement rate adalah indikator terbaik untuk mengetahui apakah konten Anda benar-benar dinikmati dan memancing respons audiens, bukan sekadar lewat di beranda." },
+                { text: "Total biaya yang dihabiskan untuk membayar influencer", correct: false, rationale: "Ini disebut Cost per Action (CPA) atau metrik anggaran finansial." },
+                { text: "Kecepatan loading dari website utama perusahaan", correct: false, rationale: "Ini adalah metrik teknis performa web, bukan interaksi sosial media." },
+                { text: "Jumlah total kompetitor di industri yang sama", correct: false, rationale: "Ini adalah data riset pasar, bukan metrik kampanye internal." }
+            ]
+        }
+    ];
+
+    let currentQIndex = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const q = questions[currentQIndex];
+        document.getElementById('question-text').innerText = (currentQIndex + 1) + ". " + q.question;
+        const optionsArea = document.getElementById('options-area');
+        optionsArea.innerHTML = '';
+        document.getElementById('feedback-area').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+
+        q.options.forEach((opt, index) => {
+            const li = document.createElement('li');
+            const btn = document.createElement('button');
+            btn.innerText = opt.text;
+            btn.onclick = () => checkAnswer(index, btn);
+            li.appendChild(btn);
+            optionsArea.appendChild(li);
+        });
+    }
+
+    function checkAnswer(selectedIndex, btn) {
+        const q = questions[currentQIndex];
+        const isCorrect = q.options[selectedIndex].correct;
+        const buttons = document.querySelectorAll('.options button');
+        
+        buttons.forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+            btn.classList.add('btn-correct');
+            score++;
+            showFeedback("Benar! " + q.options[selectedIndex].rationale, "correct");
+        } else {
+            btn.classList.add('btn-wrong');
+            const correctIndex = q.options.findIndex(o => o.correct);
+            buttons[correctIndex].classList.add('btn-correct');
+            showFeedback("Salah. " + q.options[selectedIndex].rationale, "wrong");
+        }
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function showFeedback(text, type) {
+        const fb = document.getElementById('feedback-area');
+        fb.innerText = text;
+        fb.className = 'feedback ' + type;
+        fb.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQIndex++;
+        if (currentQIndex < questions.length) {
+            loadQuestion();
+        } else {
+            document.getElementById('quiz-area').style.display = 'none';
+            document.getElementById('score-area').style.display = 'block';
+            document.getElementById('final-score').innerText = "Skor Anda: " + score + " / " + questions.length;
+        }
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>

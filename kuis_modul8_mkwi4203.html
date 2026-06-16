@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis MKWI4203 - Modul 8</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
+        .quiz-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; }
+        .question { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
+        .options { list-style-type: none; padding: 0; }
+        .options li { margin-bottom: 10px; }
+        .options button { width: 100%; padding: 15px; text-align: left; background: #e9ecef; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 1em; transition: 0.3s; }
+        .options button:hover { background: #dce1e6; }
+        .options button:disabled { cursor: not-allowed; }
+        .btn-correct { background: #d4edda !important; border-color: #c3e6cb !important; color: #155724; }
+        .btn-wrong { background: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24; }
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .next-btn { display: none; width: 100%; padding: 15px; margin-top: 20px; background: #fd7e14; color: white; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
+        .next-btn:hover { background: #e86e04; }
+        .score-container { text-align: center; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h2>Latihan Soal Modul 8:<br>Kepemimpinan & Pembentukan Tim</h2>
+    <div id="quiz-area">
+        <div id="question-text" class="question">Memuat pertanyaan...</div>
+        <ul id="options-area" class="options"></ul>
+        <div id="feedback-area" class="feedback"></div>
+        <button id="next-btn" class="next-btn" onclick="nextQuestion()">Pertanyaan Selanjutnya</button>
+    </div>
+    <div id="score-area" class="score-container">
+        <h3 id="final-score"></h3>
+        <button class="next-btn" style="display:block;" onclick="location.reload()">Ulangi Kuis</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "Gaya kepemimpinan yang paling ideal untuk menghadapi era digital yang penuh ketidakpastian (VUCA) adalah...",
+            options: [
+                { text: "Kepemimpinan Otoriter (Authoritarian)", correct: false, rationale: "Gaya ini kaku dan menghambat kelincahan tim." },
+                { text: "Kepemimpinan Transaksional", correct: false, rationale: "Fokus hanya pada reward dan punishment, kurang memicu inovasi out-of-the-box." },
+                { text: "Kepemimpinan Agile (Tangkas) dan Transformasional", correct: true, rationale: "Pemimpin agile mampu beradaptasi dengan cepat, sementara gaya transformasional menginspirasi tim untuk berinovasi." },
+                { text: "Kepemimpinan Laissez-Faire (Bebas)", correct: false, rationale: "Terlalu bebas tanpa arah justru berbahaya di era yang kompleks." }
+            ]
+        },
+        {
+            question: "Menurut teori perkembangan kelompok dari Tuckman, tahap di mana anggota tim mulai mengalami konflik, perbedaan pendapat, dan adu pengaruh disebut fase...",
+            options: [
+                { text: "Forming (Pembentukan)", correct: false, rationale: "Ini adalah fase perkenalan awal yang masih canggung tapi sopan." },
+                { text: "Storming (Pancah pancaroba/Konflik)", correct: true, rationale: "Storming adalah fase krusial di mana kepribadian dan gaya kerja mulai berbenturan untuk mencari kesepakatan." },
+                { text: "Norming (Penormalan)", correct: false, rationale: "Di tahap ini, aturan dan norma kerja tim sudah disepakati bersama." },
+                { text: "Performing (Berkinerja)", correct: false, rationale: "Tim sudah berfungsi secara optimal dan mandiri." }
+            ]
+        },
+        {
+            question: "Tantangan terbesar dalam mengelola 'Virtual Team' (Tim Virtual) yang bekerja secara remote/jarak jauh di era digital adalah...",
+            options: [
+                { text: "Membangun rasa saling percaya (trust) dan komunikasi yang efektif tanpa interaksi fisik", correct: true, rationale: "Tanpa tatap muka, rawan terjadi miskomunikasi dan sulit menumbuhkan ikatan emosional antaranggota." },
+                { text: "Kesulitan mencari perangkat komputer yang memadai", correct: false, rationale: "Perangkat keras biasanya sudah bukan menjadi masalah utama bagi pekerja digital." },
+                { text: "Terlalu banyak aturan berpakaian (dress code) saat rapat", correct: false, rationale: "Tim virtual justru cenderung lebih santai soal pakaian." },
+                { text: "Tidak adanya perangkat lunak untuk konferensi video", correct: false, rationale: "Saat ini alat seperti Zoom atau Google Meet sangat melimpah dan mudah diakses." }
+            ]
+        },
+        {
+            question: "Keberagaman (Diversity) dalam komposisi sebuah tim startup digital sangat dianjurkan karena...",
+            options: [
+                { text: "Mempermudah manajer untuk memecah belah anggota tim", correct: false, rationale: "Memecah belah tim adalah tindakan merusak (toksik)." },
+                { text: "Memenuhi syarat administratif dari pemerintah semata", correct: false, rationale: "Keberagaman memiliki nilai fungsional, bukan sekadar kewajiban birokrasi." },
+                { text: "Menghasilkan spektrum sudut pandang yang lebih luas sehingga memicu pemecahan masalah dan inovasi yang lebih kaya", correct: true, rationale: "Latar belakang yang berbeda melahirkan ide-ide yang beragam untuk memecahkan masalah kompleks." },
+                { text: "Memastikan semua anggota tim memiliki keahlian teknis (coding) yang persis sama", correct: false, rationale: "Tim butuh keahlian komplementer (saling melengkapi), bukan kualifikasi yang identik." }
+            ]
+        },
+        {
+            question: "Seorang pemimpin digital yang mempraktikkan 'Empowerment' (Pemberdayaan) dalam timnya akan melakukan hal berikut...",
+            options: [
+                { text: "Mengambil alih seluruh pekerjaan sulit agar tim tidak stres", correct: false, rationale: "Ini disebut micromanagement, bukan pemberdayaan." },
+                { text: "Mendelegasikan wewenang pengambilan keputusan dan memberikan otonomi kepada anggota tim sesuai kapasitas mereka", correct: true, rationale: "Pemberdayaan berarti memberikan kepercayaan dan ruang bagi anggota tim untuk berkembang dan mengambil tanggung jawab." },
+                { text: "Menyembunyikan informasi strategis agar anggota tim tetap bergantung padanya", correct: false, rationale: "Pemimpin yang baik transparan dalam berbagi visi dan informasi." },
+                { text: "Memaksa tim bekerja lembur tanpa kompensasi tambahan", correct: false, rationale: "Ini adalah bentuk eksploitasi." }
+            ]
+        }
+    ];
+
+    let currentQIndex = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const q = questions[currentQIndex];
+        document.getElementById('question-text').innerText = (currentQIndex + 1) + ". " + q.question;
+        const optionsArea = document.getElementById('options-area');
+        optionsArea.innerHTML = '';
+        document.getElementById('feedback-area').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+
+        q.options.forEach((opt, index) => {
+            const li = document.createElement('li');
+            const btn = document.createElement('button');
+            btn.innerText = opt.text;
+            btn.onclick = () => checkAnswer(index, btn);
+            li.appendChild(btn);
+            optionsArea.appendChild(li);
+        });
+    }
+
+    function checkAnswer(selectedIndex, btn) {
+        const q = questions[currentQIndex];
+        const isCorrect = q.options[selectedIndex].correct;
+        const buttons = document.querySelectorAll('.options button');
+        
+        buttons.forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+            btn.classList.add('btn-correct');
+            score++;
+            showFeedback("Benar! " + q.options[selectedIndex].rationale, "correct");
+        } else {
+            btn.classList.add('btn-wrong');
+            const correctIndex = q.options.findIndex(o => o.correct);
+            buttons[correctIndex].classList.add('btn-correct');
+            showFeedback("Salah. " + q.options[selectedIndex].rationale, "wrong");
+        }
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function showFeedback(text, type) {
+        const fb = document.getElementById('feedback-area');
+        fb.innerText = text;
+        fb.className = 'feedback ' + type;
+        fb.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQIndex++;
+        if (currentQIndex < questions.length) {
+            loadQuestion();
+        } else {
+            document.getElementById('quiz-area').style.display = 'none';
+            document.getElementById('score-area').style.display = 'block';
+            document.getElementById('final-score').innerText = "Skor Anda: " + score + " / " + questions.length;
+        }
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>

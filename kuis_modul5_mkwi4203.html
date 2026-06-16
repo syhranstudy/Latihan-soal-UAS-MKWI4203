@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis MKWI4203 - Modul 5</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
+        .quiz-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; }
+        .question { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
+        .options { list-style-type: none; padding: 0; }
+        .options li { margin-bottom: 10px; }
+        .options button { width: 100%; padding: 15px; text-align: left; background: #e9ecef; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 1em; transition: 0.3s; }
+        .options button:hover { background: #dce1e6; }
+        .options button:disabled { cursor: not-allowed; }
+        .btn-correct { background: #d4edda !important; border-color: #c3e6cb !important; color: #155724; }
+        .btn-wrong { background: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24; }
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .next-btn { display: none; width: 100%; padding: 15px; margin-top: 20px; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
+        .next-btn:hover { background: #0056b3; }
+        .score-container { text-align: center; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h2>Latihan Soal Modul 5:<br>Memahami Konsumen di Era Digital</h2>
+    <div id="quiz-area">
+        <div id="question-text" class="question">Memuat pertanyaan...</div>
+        <ul id="options-area" class="options"></ul>
+        <div id="feedback-area" class="feedback"></div>
+        <button id="next-btn" class="next-btn" onclick="nextQuestion()">Pertanyaan Selanjutnya</button>
+    </div>
+    <div id="score-area" class="score-container">
+        <h3 id="final-score"></h3>
+        <button class="next-btn" style="display:block;" onclick="location.reload()">Ulangi Kuis</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "Karakteristik utama yang membedakan konsumen digital dari konsumen tradisional adalah...",
+            options: [
+                { text: "Ketergantungan tinggi pada tenaga penjual di toko", correct: false, rationale: "Konsumen digital lebih mandiri dalam mencari informasi." },
+                { text: "Cenderung mencari informasi dan membandingkan ulasan (review) secara online sebelum membeli", correct: true, rationale: "Akses informasi yang luas membuat konsumen digital sangat bergantung pada ulasan pengguna lain (social proof)." },
+                { text: "Sangat loyal pada satu merek dan tidak mau mencoba merek baru", correct: false, rationale: "Konsumen digital cenderung lebih mudah beralih merek jika ada penawaran yang lebih baik." },
+                { text: "Menghindari penggunaan perangkat seluler untuk bertransaksi", correct: false, rationale: "Justru transaksi via perangkat seluler (mobile commerce) adalah ciri utamanya." }
+            ]
+        },
+        {
+            question: "Dalam model 5A Customer Path (Jalur Pelanggan) yang dicetuskan Philip Kotler, tahap di mana pelanggan merekomendasikan merek kepada orang lain disebut...",
+            options: [
+                { text: "Aware (Sadar)", correct: false, rationale: "Aware adalah tahap awal mengetahui keberadaan merek." },
+                { text: "Appeal (Tertarik)", correct: false, rationale: "Appeal adalah tahap di mana pelanggan mulai merasa tertarik." },
+                { text: "Act (Bertindak)", correct: false, rationale: "Act adalah tindakan pembelian atau penggunaan." },
+                { text: "Advocate (Menganjurkan)", correct: true, rationale: "Advocate adalah puncak loyalitas di mana pelanggan secara sukarela membela dan merekomendasikan produk." }
+            ]
+        },
+        {
+            question: "Fenomena di mana pelanggan melihat-lihat barang secara fisik di toko konvensional, namun akhirnya membelinya secara online untuk mendapat harga lebih murah disebut...",
+            options: [
+                { text: "Showrooming", correct: true, rationale: "Toko fisik hanya dijadikan 'showroom' pameran, sementara transaksi dilakukan di platform digital." },
+                { text: "Webrooming", correct: false, rationale: "Webrooming adalah kebalikannya: riset online lalu beli di toko fisik." },
+                { text: "Dropshipping", correct: false, rationale: "Dropshipping adalah model bisnis ritel tanpa menyetok barang." },
+                { text: "Crowdsourcing", correct: false, rationale: "Pengumpulan ide atau dana dari banyak orang secara online." }
+            ]
+        },
+        {
+            question: "Pendekatan pemasaran yang memberikan pengalaman berbelanja yang mulus dan terintegrasi di berbagai saluran (toko fisik, aplikasi, website) disebut strategi...",
+            options: [
+                { text: "Single-channel", correct: false, rationale: "Hanya menggunakan satu saluran penjualan." },
+                { text: "Multi-channel", correct: false, rationale: "Menggunakan banyak saluran, tetapi saluran tersebut tidak terhubung satu sama lain." },
+                { text: "Omnichannel", correct: true, rationale: "Omnichannel memastikan integrasi data pelanggan sehingga perpindahan dari belanja online ke offline terasa tanpa hambatan." },
+                { text: "Micro-marketing", correct: false, rationale: "Pemasaran yang ditargetkan pada individu atau kelompok sangat kecil." }
+            ]
+        },
+        {
+            question: "Mengapa 'Personalisasi' menjadi tuntutan utama dari konsumen di era digital?",
+            options: [
+                { text: "Karena mereka ingin semua data pribadi mereka disebarluaskan", correct: false, rationale: "Konsumen tetap peduli pada privasi, mereka hanya ingin penawaran yang relevan." },
+                { text: "Karena konsumen merasa kebanjiran informasi dan hanya ingin melihat konten atau rekomendasi yang relevan dengan kebutuhan spesifik mereka", correct: true, rationale: "Personalisasi memotong kebisingan informasi dan memberikan solusi yang tepat sasaran menggunakan data analitik." },
+                { text: "Karena personalisasi menurunkan harga barang secara otomatis", correct: false, rationale: "Personalisasi tidak berhubungan langsung dengan penurunan harga barang." },
+                { text: "Karena sistem digital tidak bisa memproses penjualan tanpa personalisasi", correct: false, rationale: "Sistem tetap bisa memproses penjualan massal, namun kurang efektif." }
+            ]
+        }
+    ];
+
+    let currentQIndex = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const q = questions[currentQIndex];
+        document.getElementById('question-text').innerText = (currentQIndex + 1) + ". " + q.question;
+        const optionsArea = document.getElementById('options-area');
+        optionsArea.innerHTML = '';
+        document.getElementById('feedback-area').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+
+        q.options.forEach((opt, index) => {
+            const li = document.createElement('li');
+            const btn = document.createElement('button');
+            btn.innerText = opt.text;
+            btn.onclick = () => checkAnswer(index, btn);
+            li.appendChild(btn);
+            optionsArea.appendChild(li);
+        });
+    }
+
+    function checkAnswer(selectedIndex, btn) {
+        const q = questions[currentQIndex];
+        const isCorrect = q.options[selectedIndex].correct;
+        const buttons = document.querySelectorAll('.options button');
+        
+        buttons.forEach(b => b.disabled = true); // Disable all buttons
+
+        if (isCorrect) {
+            btn.classList.add('btn-correct');
+            score++;
+            showFeedback("Benar! " + q.options[selectedIndex].rationale, "correct");
+        } else {
+            btn.classList.add('btn-wrong');
+            // Highlight correct answer
+            const correctIndex = q.options.findIndex(o => o.correct);
+            buttons[correctIndex].classList.add('btn-correct');
+            showFeedback("Salah. " + q.options[selectedIndex].rationale, "wrong");
+        }
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function showFeedback(text, type) {
+        const fb = document.getElementById('feedback-area');
+        fb.innerText = text;
+        fb.className = 'feedback ' + type;
+        fb.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQIndex++;
+        if (currentQIndex < questions.length) {
+            loadQuestion();
+        } else {
+            document.getElementById('quiz-area').style.display = 'none';
+            document.getElementById('score-area').style.display = 'block';
+            document.getElementById('final-score').innerText = "Skor Anda: " + score + " / " + questions.length;
+        }
+    }
+
+    // Start quiz
+    loadQuestion();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis MKWI4203 - Modul 6</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; padding: 20px; }
+        .quiz-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; }
+        .question { font-size: 1.2em; font-weight: bold; margin-bottom: 20px; }
+        .options { list-style-type: none; padding: 0; }
+        .options li { margin-bottom: 10px; }
+        .options button { width: 100%; padding: 15px; text-align: left; background: #e9ecef; border: 2px solid transparent; border-radius: 5px; cursor: pointer; font-size: 1em; transition: 0.3s; }
+        .options button:hover { background: #dce1e6; }
+        .options button:disabled { cursor: not-allowed; }
+        .btn-correct { background: #d4edda !important; border-color: #c3e6cb !important; color: #155724; }
+        .btn-wrong { background: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24; }
+        .feedback { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .next-btn { display: none; width: 100%; padding: 15px; margin-top: 20px; background: #28a745; color: white; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
+        .next-btn:hover { background: #218838; }
+        .score-container { text-align: center; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h2>Latihan Soal Modul 6:<br>Model Bisnis di Era Digital</h2>
+    <div id="quiz-area">
+        <div id="question-text" class="question">Memuat pertanyaan...</div>
+        <ul id="options-area" class="options"></ul>
+        <div id="feedback-area" class="feedback"></div>
+        <button id="next-btn" class="next-btn" onclick="nextQuestion()">Pertanyaan Selanjutnya</button>
+    </div>
+    <div id="score-area" class="score-container">
+        <h3 id="final-score"></h3>
+        <button class="next-btn" style="display:block;" onclick="location.reload()">Ulangi Kuis</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "Spotify menawarkan akses mendengarkan musik secara gratis dengan diselingi iklan, namun pelanggan harus membayar untuk versi tanpa iklan dan fitur unduh. Model bisnis ini disebut...",
+            options: [
+                { text: "E-Commerce", correct: false, rationale: "E-commerce adalah model penjualan barang retail secara online." },
+                { text: "Freemium", correct: true, rationale: "Freemium merupakan gabungan 'Free' (gratis untuk fitur dasar) dan 'Premium' (berbayar untuk fitur tambahan)." },
+                { text: "Dropshipping", correct: false, rationale: "Ini adalah model rantai pasok untuk penjualan barang fisik." },
+                { text: "On-Demand", correct: false, rationale: "On-demand berfokus pada penyediaan layanan instan saat itu juga, seperti ojek online." }
+            ]
+        },
+        {
+            question: "Kekuatan utama dari model bisnis platform (seperti Tokopedia, Airbnb, Gojek) sangat bergantung pada terjadinya 'Network Effect' (Efek Jaringan). Maksud dari efek ini adalah...",
+            options: [
+                { text: "Nilai platform akan semakin meningkat jika jumlah penggunanya (baik penjual maupun pembeli) semakin banyak", correct: true, rationale: "Makin banyak pembeli, makin banyak penjual yang tertarik bergabung, dan sebaliknya. Siklus ini menciptakan nilai." },
+                { text: "Perusahaan harus membangun jaringan infrastruktur kabel internet sendiri", correct: false, rationale: "Efek jaringan berkaitan dengan jumlah pengguna (user base), bukan infrastruktur perangkat keras." },
+                { text: "Sistem keamanan siber jaringan yang tidak bisa ditembus", correct: false, rationale: "Ini merujuk pada cyber security, bukan network effect pasar." },
+                { text: "Penjualan produk secara berjenjang ke bawah", correct: false, rationale: "Pernyataan ini mendeskripsikan model Multi-Level Marketing (MLM)." }
+            ]
+        },
+        {
+            question: "Dalam Business Model Canvas (BMC), komponen yang menjelaskan bagaimana perusahaan berkomunikasi dan menjangkau segmen pelanggannya untuk menyampaikan nilai tambah (Value Proposition) disebut blok...",
+            options: [
+                { text: "Customer Segments", correct: false, rationale: "Ini mendefinisikan siapa target pasarnya." },
+                { text: "Key Activities", correct: false, rationale: "Ini menjelaskan kegiatan utama yang harus dilakukan perusahaan agar model bisnisnya berjalan." },
+                { text: "Channels", correct: true, rationale: "Saluran (Channels) adalah titik sentuh pelanggan yang memainkan peran penting dalam pengalaman pelanggan." },
+                { text: "Revenue Streams", correct: false, rationale: "Ini merujuk pada dari mana perusahaan mendapatkan uang." }
+            ]
+        },
+        {
+            question: "Netflix dan Microsoft Office 365 mengenakan biaya tetap secara berkala (bulanan/tahunan) kepada penggunanya untuk mempertahankan akses ke layanan. Model bisnis ini dikenal sebagai...",
+            options: [
+                { text: "Subscription (Berlangganan)", correct: true, rationale: "Model berlangganan memastikan aliran pendapatan berulang (recurring revenue) yang stabil bagi perusahaan." },
+                { text: "Affiliate Marketing", correct: false, rationale: "Model afiliasi mendapat komisi dari mempromosikan produk pihak ketiga." },
+                { text: "Bait and Hook", correct: false, rationale: "Menjual produk utama dengan sangat murah, lalu mengunci pelanggan untuk membeli isi ulangnya (seperti alat cukur dan siletnya)." },
+                { text: "Crowdfunding", correct: false, rationale: "Mengumpulkan dana dari banyak orang untuk memulai sebuah proyek." }
+            ]
+        },
+        {
+            question: "Model bisnis 'Long Tail' (Ekor Panjang) menjadi sangat memungkinkan di era digital. Konsep utama dari model bisnis ini adalah...",
+            options: [
+                { text: "Hanya menjual satu jenis produk unggulan (bestseller) dalam jumlah yang sangat masif", correct: false, rationale: "Fokus pada bestseller adalah kebalikan dari model long tail." },
+                { text: "Menjual berbagai macam produk 'niche' (spesifik/kurang populer) dalam volume kecil, namun menawarkan variasi yang sangat banyak", correct: true, rationale: "Di era digital, biaya penyimpanan produk digital/katalog sangat murah, sehingga menguntungkan untuk menjual jutaan produk tidak populer dalam kuantitas sedikit (seperti buku langka di Amazon)." },
+                { text: "Menjalin rantai pasokan distribusi yang sangat panjang dari pabrik ke konsumen akhir", correct: false, rationale: "Ini merujuk pada masalah efisiensi rantai pasok konvensional." },
+                { text: "Menunda peluncuran produk inovatif dalam jangka waktu yang panjang", correct: false, rationale: "Tidak ada hubungannya dengan penundaan peluncuran produk." }
+            ]
+        }
+    ];
+
+    let currentQIndex = 0;
+    let score = 0;
+
+    function loadQuestion() {
+        const q = questions[currentQIndex];
+        document.getElementById('question-text').innerText = (currentQIndex + 1) + ". " + q.question;
+        const optionsArea = document.getElementById('options-area');
+        optionsArea.innerHTML = '';
+        document.getElementById('feedback-area').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+
+        q.options.forEach((opt, index) => {
+            const li = document.createElement('li');
+            const btn = document.createElement('button');
+            btn.innerText = opt.text;
+            btn.onclick = () => checkAnswer(index, btn);
+            li.appendChild(btn);
+            optionsArea.appendChild(li);
+        });
+    }
+
+    function checkAnswer(selectedIndex, btn) {
+        const q = questions[currentQIndex];
+        const isCorrect = q.options[selectedIndex].correct;
+        const buttons = document.querySelectorAll('.options button');
+        
+        buttons.forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+            btn.classList.add('btn-correct');
+            score++;
+            showFeedback("Benar! " + q.options[selectedIndex].rationale, "correct");
+        } else {
+            btn.classList.add('btn-wrong');
+            const correctIndex = q.options.findIndex(o => o.correct);
+            buttons[correctIndex].classList.add('btn-correct');
+            showFeedback("Salah. " + q.options[selectedIndex].rationale, "wrong");
+        }
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function showFeedback(text, type) {
+        const fb = document.getElementById('feedback-area');
+        fb.innerText = text;
+        fb.className = 'feedback ' + type;
+        fb.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQIndex++;
+        if (currentQIndex < questions.length) {
+            loadQuestion();
+        } else {
+            document.getElementById('quiz-area').style.display = 'none';
+            document.getElementById('score-area').style.display = 'block';
+            document.getElementById('final-score').innerText = "Skor Anda: " + score + " / " + questions.length;
+        }
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
