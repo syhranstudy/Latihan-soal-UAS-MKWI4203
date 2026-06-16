@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Modul 1 — Kewirausahaan di Era Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14172B;
+    --surface: #1C2046;
+    --surface-2: #262B56;
+    --accent-amber: #F2A93B;
+    --accent-teal: #4FD1C5;
+    --accent-coral: #FF6B6B;
+    --text-primary: #F5F3EE;
+    --text-muted: #9CA3C4;
+    --border: rgba(245,243,238,0.10);
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: radial-gradient(circle at 20% -10%, #232958 0%, var(--bg) 55%);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding: 32px 16px 64px;
+  }
+
+  .app{ width:100%; max-width: 640px; }
+
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-amber);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+
+  h1{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 5vw, 28px);
+    font-weight: 700;
+    margin: 0 0 18px;
+    line-height: 1.25;
+  }
+
+  .progress-track{
+    display:flex;
+    align-items:flex-end;
+    gap: 3px;
+    height: 36px;
+    margin-bottom: 8px;
+  }
+  .progress-bar{
+    flex:1;
+    background: var(--border);
+    border-radius: 3px 3px 0 0;
+    transition: background .35s ease, transform .35s ease;
+    transform-origin: bottom;
+  }
+  .progress-bar.current{ background: var(--accent-amber); }
+  .progress-bar.correct{ background: var(--accent-teal); }
+  .progress-bar.wrong{ background: var(--accent-coral); }
+
+  .progress-label{
+    display:flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+  .progress-label span:last-child{ font-weight:600; color: var(--text-primary); }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+  }
+
+  .q-meta{
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .q-text{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 22px;
+  }
+
+  .options{ display:flex; flex-direction:column; gap: 10px; }
+
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap: 12px;
+    text-align:left;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, transform .15s ease;
+  }
+  .option:hover:not(.locked){ border-color: var(--accent-amber); transform: translateY(-1px); }
+  .option:focus-visible{ outline: 2px solid var(--accent-amber); outline-offset: 2px; }
+
+  .option .tag{
+    flex-shrink:0;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: rgba(245,243,238,0.08);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .option.correct{ border-color: var(--accent-teal); background: rgba(79,209,197,0.12); }
+  .option.correct .tag{ background: var(--accent-teal); color: #0B2421; }
+  .option.wrong{ border-color: var(--accent-coral); background: rgba(255,107,107,0.10); }
+  .option.wrong .tag{ background: var(--accent-coral); color: #2B0B0B; }
+  .option.locked:not(.correct):not(.wrong){ opacity: 0.45; }
+
+  .explain{
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent-amber);
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    display:none;
+  }
+  .explain.show{ display:block; }
+  .explain strong{ color: var(--text-primary); }
+
+  .next-btn{
+    margin-top: 22px;
+    width:100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: var(--accent-amber);
+    color: #2B1B00;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor:pointer;
+    display:none;
+    transition: filter .2s ease;
+  }
+  .next-btn.show{ display:block; }
+  .next-btn:hover{ filter: brightness(1.08); }
+
+  /* Result screen */
+  .result{ display:none; text-align:center; }
+  .result.show{ display:block; }
+  .result .score-num{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 64px;
+    font-weight: 700;
+    margin: 6px 0 2px;
+    background: linear-gradient(135deg, var(--accent-amber), var(--accent-teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .result .score-sub{ color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+  .result .verdict{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .result .verdict-desc{
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 440px;
+    margin-left:auto; margin-right:auto;
+  }
+  .breakdown{
+    display:flex; gap:12px; margin-bottom:24px;
+  }
+  .breakdown .b-item{
+    flex:1; background: var(--surface-2); border-radius: 14px; padding: 14px;
+    border: 1px solid var(--border);
+  }
+  .breakdown .b-num{ font-family:'Space Grotesk', sans-serif; font-size:22px; font-weight:700; }
+  .breakdown .b-label{ font-size: 12px; color: var(--text-muted); margin-top:4px; }
+
+  .retry-btn{
+    padding: 14px 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor:pointer;
+    transition: border-color .2s ease;
+  }
+  .retry-btn:hover{ border-color: var(--accent-amber); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <p class="eyebrow">MKWI4203 · Kewirausahaan di Era Digital</p>
+  <h1>Modul 1 — Perkembangan Dunia Usaha di Era Digital</h1>
+
+  <div class="progress-track" id="progressTrack"></div>
+  <div class="progress-label">
+    <span id="progressText">Soal 1 dari 20</span>
+    <span id="scoreText">Skor: 0</span>
+  </div>
+
+  <div class="card" id="quizCard">
+    <p class="q-meta" id="qMeta">Kegiatan Belajar 1</p>
+    <p class="q-text" id="qText"></p>
+    <div class="options" id="optionsContainer"></div>
+    <div class="explain" id="explainBox"></div>
+    <button class="next-btn" id="nextBtn">Lanjut →</button>
+  </div>
+
+  <div class="card result" id="resultCard">
+    <p class="eyebrow" style="text-align:center;">Hasil Modul 1</p>
+    <div class="score-num" id="finalScore">0/20</div>
+    <p class="score-sub" id="finalPercent">0%</p>
+    <p class="verdict" id="verdictTitle"></p>
+    <p class="verdict-desc" id="verdictDesc"></p>
+    <div class="breakdown">
+      <div class="b-item">
+        <div class="b-num" id="kb1Score">0/10</div>
+        <div class="b-label">KB1 · Perkembangan Kewirausahaan</div>
+      </div>
+      <div class="b-item">
+        <div class="b-num" id="kb2Score">0/10</div>
+        <div class="b-label">KB2 · Peran Teknologi Digital</div>
+      </div>
+    </div>
+    <button class="retry-btn" id="retryBtn">Ulangi Kuis Modul 1</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // ===== KB1: Perkembangan Kewirausahaan (1-10) =====
+  {
+    kb: 1,
+    q: "Secara umum, kewirausahaan paling tepat dipahami sebagai...",
+    options: [
+      "Kemampuan mengelola modal besar warisan keluarga",
+      "Proses menciptakan nilai melalui pengenalan peluang, pengambilan risiko, dan inovasi",
+      "Aktivitas berdagang yang hanya berlaku di sektor ritel",
+      "Pekerjaan yang hanya dilakukan oleh pemilik perusahaan besar"
+    ],
+    correct: 1,
+    explain: "Kewirausahaan adalah proses mengenali peluang dan mengubahnya menjadi nilai ekonomi melalui inovasi dan kesediaan menanggung risiko, bukan sekadar memiliki modal atau menjalankan usaha berskala besar."
+  },
+  {
+    kb: 1,
+    q: "Ciri utama yang membedakan seorang wirausaha dari pelaku usaha biasa adalah...",
+    options: [
+      "Selalu menghindari segala bentuk risiko",
+      "Kesediaan mengambil risiko terukur disertai kreativitas dan orientasi pada peluang baru",
+      "Hanya menjalankan usaha yang sudah pasti untung",
+      "Tidak pernah melakukan perubahan pada model usahanya"
+    ],
+    correct: 1,
+    explain: "Wirausaha dicirikan oleh kesiapan mengambil risiko yang telah diperhitungkan, sambil tetap kreatif mencari dan mengeksekusi peluang baru."
+  },
+  {
+    kb: 1,
+    q: "Perbedaan paling mendasar antara wirausaha konvensional dan wirausaha era digital terletak pada...",
+    options: [
+      "Wirausaha digital tidak memerlukan strategi pemasaran",
+      "Wirausaha digital memanfaatkan teknologi dan platform daring untuk menjangkau pasar serta mengelola operasional",
+      "Wirausaha konvensional selalu lebih menguntungkan",
+      "Wirausaha digital tidak memiliki pelanggan tetap"
+    ],
+    correct: 1,
+    explain: "Wirausaha era digital memanfaatkan teknologi digital, baik untuk menjangkau pasar yang lebih luas maupun mengelola operasional usaha, yang membedakannya dari pendekatan konvensional yang lebih bergantung pada interaksi fisik."
+  },
+  {
+    kb: 1,
+    q: "Yang dimaksud dengan ekonomi digital adalah...",
+    options: [
+      "Sistem ekonomi yang hanya menggunakan uang tunai",
+      "Aktivitas ekonomi yang berbasis pada pemanfaatan teknologi informasi dan komunikasi sebagai infrastruktur utamanya",
+      "Ekonomi yang hanya berlaku di negara maju",
+      "Kegiatan ekonomi yang melarang transaksi daring"
+    ],
+    correct: 1,
+    explain: "Ekonomi digital merujuk pada aktivitas ekonomi yang bertumpu pada teknologi informasi dan komunikasi sebagai fondasi transaksi, produksi, dan distribusi nilai."
+  },
+  {
+    kb: 1,
+    q: "Dalam konteks kewirausahaan, inovasi paling tepat dipahami sebagai...",
+    options: [
+      "Mengulang strategi pesaing secara identik",
+      "Penerapan ide atau cara baru yang menghasilkan nilai tambah bagi pelanggan atau usaha",
+      "Hanya berkaitan dengan penciptaan produk fisik baru",
+      "Proses yang hanya relevan bagi perusahaan teknologi"
+    ],
+    correct: 1,
+    explain: "Inovasi dalam kewirausahaan mencakup penerapan gagasan baru, baik pada produk, proses, maupun model bisnis, yang menciptakan nilai tambah."
+  },
+  {
+    kb: 1,
+    q: "Faktor yang paling mendorong pesatnya pertumbuhan kewirausahaan digital di Indonesia adalah...",
+    options: [
+      "Menurunnya jumlah pengguna internet",
+      "Tingginya penetrasi internet dan kepemilikan smartphone di masyarakat",
+      "Terbatasnya akses transportasi antarkota",
+      "Berkurangnya minat masyarakat pada belanja daring"
+    ],
+    correct: 1,
+    explain: "Penetrasi internet dan kepemilikan smartphone yang tinggi memperluas akses masyarakat pada platform digital, sehingga mendorong tumbuhnya wirausaha berbasis digital."
+  },
+  {
+    kb: 1,
+    q: "Perbedaan paling tepat antara startup dan UMKM konvensional adalah...",
+    options: [
+      "Startup tidak boleh menggunakan teknologi",
+      "Startup umumnya dirancang untuk tumbuh cepat dan skalabel, sering berbasis solusi teknologi, sedangkan UMKM konvensional cenderung bertumbuh lebih organik",
+      "UMKM selalu lebih besar dari startup",
+      "Startup tidak memiliki pelanggan"
+    ],
+    correct: 1,
+    explain: "Startup umumnya didesain untuk pertumbuhan cepat dan skalabilitas tinggi berbasis solusi teknologi, sementara UMKM konvensional biasanya bertumbuh secara lebih bertahap."
+  },
+  {
+    kb: 1,
+    q: "Konsep 'creative destruction' yang dikemukakan oleh Joseph Schumpeter menjelaskan bahwa...",
+    options: [
+      "Inovasi selalu merusak perekonomian tanpa manfaat",
+      "Inovasi wirausaha menggantikan struktur ekonomi lama dengan yang baru sehingga mendorong kemajuan ekonomi",
+      "Wirausaha sebaiknya menghindari segala bentuk perubahan",
+      "Kerusakan fisik adalah syarat utama kesuksesan usaha"
+    ],
+    correct: 1,
+    explain: "Schumpeter menjelaskan bahwa inovasi wirausaha menggeser dan menggantikan cara-cara ekonomi lama dengan yang baru, sebuah proses yang justru menjadi penggerak kemajuan ekonomi secara keseluruhan."
+  },
+  {
+    kb: 1,
+    q: "Contoh inovasi disruptif di era digital yang mengubah industri transportasi konvensional adalah...",
+    options: [
+      "Penerapan jadwal angkutan umum yang tetap",
+      "Munculnya platform transportasi daring berbasis aplikasi yang menghubungkan pengemudi dan penumpang secara langsung",
+      "Pembangunan terminal bus baru",
+      "Penambahan jumlah armada taksi konvensional"
+    ],
+    correct: 1,
+    explain: "Platform transportasi daring mengubah cara penumpang dan pengemudi terhubung, menggeser model bisnis transportasi konvensional secara signifikan — contoh nyata inovasi disruptif."
+  },
+  {
+    kb: 1,
+    q: "Salah satu tantangan utama yang dihadapi wirausaha di era digital adalah...",
+    options: [
+      "Tidak adanya persaingan sama sekali",
+      "Persaingan yang makin terbuka secara global serta risiko keamanan data pelanggan",
+      "Berkurangnya kebutuhan terhadap strategi pemasaran",
+      "Tidak perlunya beradaptasi dengan perubahan teknologi"
+    ],
+    correct: 1,
+    explain: "Era digital membuka pasar secara global sehingga persaingan meningkat, sekaligus memunculkan risiko baru terkait keamanan dan privasi data pelanggan."
+  },
+
+  // ===== KB2: Peran Teknologi Digital dalam Kesuksesan Usaha (11-20) =====
+  {
+    kb: 2,
+    q: "Peran utama teknologi digital dalam kesuksesan usaha di era digital adalah...",
+    options: [
+      "Menggantikan seluruh interaksi manusia tanpa terkecuali",
+      "Menjadi alat untuk memperluas jangkauan pasar, mengefisienkan operasional, dan mempercepat pengambilan keputusan",
+      "Hanya berguna untuk usaha berskala besar",
+      "Tidak memberikan dampak signifikan pada daya saing usaha"
+    ],
+    correct: 1,
+    explain: "Teknologi digital berperan sebagai enabler yang memperluas jangkauan pasar, mengefisienkan proses operasional, dan mendukung pengambilan keputusan yang lebih cepat dan tepat."
+  },
+  {
+    kb: 2,
+    q: "Berikut ini adalah contoh pemanfaatan teknologi digital oleh UMKM, kecuali...",
+    options: [
+      "Memasarkan produk melalui media sosial",
+      "Berjualan melalui platform marketplace",
+      "Mengelola pembayaran melalui dompet digital",
+      "Menolak seluruh bentuk transaksi non-tunai"
+    ],
+    correct: 3,
+    explain: "Menolak transaksi non-tunai justru berseberangan dengan praktik digitalisasi usaha; pemanfaatan media sosial, marketplace, dan dompet digital adalah contoh nyata adopsi teknologi oleh UMKM."
+  },
+  {
+    kb: 2,
+    q: "Transformasi digital pada bisnis paling tepat dipahami sebagai...",
+    options: [
+      "Sekadar membeli perangkat komputer baru",
+      "Perubahan menyeluruh pada proses, budaya, dan model bisnis dengan mengintegrasikan teknologi digital",
+      "Mengganti seluruh karyawan dengan mesin",
+      "Proses yang hanya berlangsung satu kali dan selesai"
+    ],
+    correct: 1,
+    explain: "Transformasi digital bukan sekadar pengadaan alat, melainkan perubahan menyeluruh pada proses bisnis, budaya kerja, dan model usaha melalui integrasi teknologi digital secara berkelanjutan."
+  },
+  {
+    kb: 2,
+    q: "Manfaat utama pemanfaatan data dan analitik bagi pelaku usaha di era digital adalah...",
+    options: [
+      "Menghilangkan kebutuhan untuk memahami pelanggan",
+      "Mendukung pengambilan keputusan yang lebih berbasis bukti, seperti memahami pola perilaku konsumen",
+      "Memperlambat proses pengambilan keputusan",
+      "Hanya relevan untuk laporan keuangan tahunan"
+    ],
+    correct: 1,
+    explain: "Data dan analitik memungkinkan pelaku usaha memahami pola perilaku konsumen secara lebih akurat, sehingga keputusan bisnis dapat diambil berdasarkan bukti, bukan sekadar intuisi."
+  },
+  {
+    kb: 2,
+    q: "Strategi pemasaran digital yang memanfaatkan optimasi agar produk lebih mudah ditemukan di mesin pencari disebut...",
+    options: [
+      "Search Engine Optimization (SEO)",
+      "Direct selling konvensional",
+      "Personal selling tatap muka",
+      "Pemasaran dari mulut ke mulut tanpa media digital"
+    ],
+    correct: 0,
+    explain: "SEO adalah strategi mengoptimalkan konten agar lebih mudah ditemukan pengguna melalui mesin pencari, salah satu komponen penting pemasaran digital."
+  },
+  {
+    kb: 2,
+    q: "Salah satu keuntungan utama e-commerce sebagai saluran penjualan bagi pelaku usaha adalah...",
+    options: [
+      "Membatasi jangkauan pelanggan hanya pada area sekitar toko fisik",
+      "Memungkinkan transaksi berlangsung lintas waktu dan lokasi tanpa batasan jam operasional toko fisik",
+      "Mewajibkan pelanggan datang langsung ke gerai",
+      "Menghapus kebutuhan terhadap strategi pemasaran"
+    ],
+    correct: 1,
+    explain: "E-commerce memungkinkan transaksi terjadi kapan saja dan di mana saja, melampaui batasan jam operasional dan lokasi fisik toko konvensional."
+  },
+  {
+    kb: 2,
+    q: "Otomasi proses bisnis dalam konteks digitalisasi usaha bertujuan utama untuk...",
+    options: [
+      "Memperlambat proses operasional agar lebih hati-hati",
+      "Meningkatkan efisiensi dan mengurangi kesalahan pada tugas-tugas yang berulang",
+      "Menghilangkan seluruh kebutuhan terhadap sumber daya manusia",
+      "Hanya digunakan pada proses produksi pabrik besar"
+    ],
+    correct: 1,
+    explain: "Otomasi membantu pelaku usaha meningkatkan efisiensi dan mengurangi kesalahan pada tugas-tugas rutin yang berulang, sehingga sumber daya dapat dialokasikan ke aktivitas yang lebih strategis."
+  },
+  {
+    kb: 2,
+    q: "Manfaat utama layanan cloud computing bagi usaha kecil adalah...",
+    options: [
+      "Mengharuskan investasi infrastruktur server fisik yang sangat besar di awal",
+      "Memberikan akses pada infrastruktur teknologi secara fleksibel dengan biaya yang lebih efisien",
+      "Hanya dapat diakses dari satu lokasi tertentu",
+      "Tidak dapat digunakan untuk menyimpan data pelanggan"
+    ],
+    correct: 1,
+    explain: "Cloud computing memungkinkan usaha kecil mengakses infrastruktur teknologi secara fleksibel sesuai kebutuhan tanpa harus berinvestasi besar pada perangkat keras sendiri."
+  },
+  {
+    kb: 2,
+    q: "Mengapa keamanan data (cybersecurity) menjadi aspek penting bagi usaha yang beroperasi secara digital?",
+    options: [
+      "Karena tidak ada risiko kebocoran data dalam transaksi daring",
+      "Karena kebocoran data pelanggan dapat merusak kepercayaan dan reputasi usaha",
+      "Karena keamanan data hanya relevan bagi institusi pemerintah",
+      "Karena pelanggan tidak peduli dengan privasi datanya"
+    ],
+    correct: 1,
+    explain: "Kebocoran atau penyalahgunaan data pelanggan dapat merusak kepercayaan yang telah dibangun, sehingga keamanan data menjadi aspek krusial dalam operasional usaha digital."
+  },
+  {
+    kb: 2,
+    q: "Secara keseluruhan, kunci keberhasilan usaha di era digital paling tepat digambarkan sebagai kombinasi dari...",
+    options: [
+      "Modal besar semata, tanpa mempertimbangkan teknologi",
+      "Pemanfaatan teknologi digital secara tepat, kemampuan beradaptasi, dan orientasi pada kebutuhan konsumen",
+      "Menghindari seluruh bentuk perubahan teknologi",
+      "Mengandalkan strategi yang sama persis dengan dekade sebelumnya"
+    ],
+    correct: 1,
+    explain: "Keberhasilan usaha di era digital ditentukan oleh kombinasi pemanfaatan teknologi yang tepat, kelenturan beradaptasi terhadap perubahan, dan fokus yang konsisten pada kebutuhan konsumen."
+  }
+];
+
+let current = 0;
+let score = 0;
+let locked = false;
+const answers = new Array(questions.length).fill(null); // 'correct' | 'wrong'
+
+const progressTrack = document.getElementById('progressTrack');
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const qMeta = document.getElementById('qMeta');
+const qText = document.getElementById('qText');
+const optionsContainer = document.getElementById('optionsContainer');
+const explainBox = document.getElementById('explainBox');
+const nextBtn = document.getElementById('nextBtn');
+const quizCard = document.getElementById('quizCard');
+const resultCard = document.getElementById('resultCard');
+
+function buildProgress(){
+  progressTrack.innerHTML = '';
+  questions.forEach((_, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'progress-bar';
+    const h = 30 + (i / (questions.length - 1)) * 70;
+    bar.style.height = h + '%';
+    progressTrack.appendChild(bar);
+  });
+}
+
+function refreshProgress(){
+  const bars = progressTrack.children;
+  for(let i=0;i<bars.length;i++){
+    bars[i].classList.remove('current','correct','wrong');
+    if(answers[i] === 'correct') bars[i].classList.add('correct');
+    else if(answers[i] === 'wrong') bars[i].classList.add('wrong');
+    else if(i === current) bars[i].classList.add('current');
+  }
+  progressText.textContent = `Soal ${current+1} dari ${questions.length}`;
+  scoreText.textContent = `Skor: ${score}`;
+}
+
+function renderQuestion(){
+  locked = false;
+  const item = questions[current];
+  qMeta.textContent = `Kegiatan Belajar ${item.kb}`;
+  qText.textContent = item.q;
+  optionsContainer.innerHTML = '';
+  explainBox.classList.remove('show');
+  explainBox.innerHTML = '';
+  nextBtn.classList.remove('show');
+  nextBtn.textContent = current === questions.length - 1 ? 'Lihat Hasil →' : 'Lanjut →';
+
+  item.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="tag">${String.fromCharCode(65+idx)}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => selectOption(idx, btn));
+    optionsContainer.appendChild(btn);
+  });
+
+  refreshProgress();
+}
+
+function selectOption(idx, btnEl){
+  if(locked) return;
+  locked = true;
+  const item = questions[current];
+  const allBtns = optionsContainer.querySelectorAll('.option');
+  allBtns.forEach(b => b.classList.add('locked'));
+
+  if(idx === item.correct){
+    btnEl.classList.add('correct');
+    answers[current] = 'correct';
+    score++;
+  } else {
+    btnEl.classList.add('wrong');
+    allBtns[item.correct].classList.add('correct');
+    answers[current] = 'wrong';
+  }
+
+  explainBox.innerHTML = `<strong>${idx === item.correct ? 'Benar.' : 'Kurang tepat.'}</strong> ${item.explain}`;
+  explainBox.classList.add('show');
+  nextBtn.classList.add('show');
+  refreshProgress();
+}
+
+nextBtn.addEventListener('click', () => {
+  if(current < questions.length - 1){
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  quizCard.style.display = 'none';
+  resultCard.classList.add('show');
+
+  document.getElementById('finalScore').textContent = `${score}/${questions.length}`;
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('finalPercent').textContent = `${pct}% jawaban benar`;
+
+  let kb1 = 0, kb2 = 0;
+  questions.forEach((q, i) => {
+    if(answers[i] === 'correct'){
+      if(q.kb === 1) kb1++; else kb2++;
+    }
+  });
+  document.getElementById('kb1Score').textContent = `${kb1}/10`;
+  document.getElementById('kb2Score').textContent = `${kb2}/10`;
+
+  let title, desc;
+  if(score >= 18){
+    title = 'Wirausaha Visioner';
+    desc = 'Pemahaman Anda terhadap perkembangan kewirausahaan dan peran teknologi digital sudah sangat solid. Siap lanjut ke Modul 2!';
+  } else if(score >= 14){
+    title = 'Inovator Potensial';
+    desc = 'Pemahaman dasar sudah baik. Coba tinjau ulang soal yang terlewat sebelum melanjutkan ke modul berikutnya.';
+  } else if(score >= 10){
+    title = 'Perlu Penajaman Strategi';
+    desc = 'Beberapa konsep kunci masih perlu diperkuat. Pertimbangkan untuk membaca ulang Kegiatan Belajar yang skornya lebih rendah.';
+  } else {
+    title = 'Mulai dari Dasar';
+    desc = 'Disarankan membaca ulang Modul 1 secara menyeluruh sebelum mencoba kuis ini lagi.';
+  }
+  document.getElementById('verdictTitle').textContent = title;
+  document.getElementById('verdictDesc').textContent = desc;
+}
+
+document.getElementById('retryBtn').addEventListener('click', () => {
+  current = 0; score = 0; answers.fill(null);
+  resultCard.classList.remove('show');
+  quizCard.style.display = 'block';
+  renderQuestion();
+});
+
+buildProgress();
+renderQuestion();
+</script>
+</body>
+</html>

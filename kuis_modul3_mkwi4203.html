@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Modul 3 — Kewirausahaan di Era Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14172B;
+    --surface: #1C2046;
+    --surface-2: #262B56;
+    --accent-amber: #F2A93B;
+    --accent-teal: #4FD1C5;
+    --accent-coral: #FF6B6B;
+    --text-primary: #F5F3EE;
+    --text-muted: #9CA3C4;
+    --border: rgba(245,243,238,0.10);
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: radial-gradient(circle at 20% -10%, #232958 0%, var(--bg) 55%);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding: 32px 16px 64px;
+  }
+
+  .app{ width:100%; max-width: 640px; }
+
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-amber);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+
+  h1{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 5vw, 28px);
+    font-weight: 700;
+    margin: 0 0 18px;
+    line-height: 1.25;
+  }
+
+  .progress-track{
+    display:flex;
+    align-items:flex-end;
+    gap: 3px;
+    height: 36px;
+    margin-bottom: 8px;
+  }
+  .progress-bar{
+    flex:1;
+    background: var(--border);
+    border-radius: 3px 3px 0 0;
+    transition: background .35s ease, transform .35s ease;
+    transform-origin: bottom;
+  }
+  .progress-bar.current{ background: var(--accent-amber); }
+  .progress-bar.correct{ background: var(--accent-teal); }
+  .progress-bar.wrong{ background: var(--accent-coral); }
+
+  .progress-label{
+    display:flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+  .progress-label span:last-child{ font-weight:600; color: var(--text-primary); }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+  }
+
+  .q-meta{
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .q-text{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 22px;
+  }
+
+  .options{ display:flex; flex-direction:column; gap: 10px; }
+
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap: 12px;
+    text-align:left;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, transform .15s ease;
+  }
+  .option:hover:not(.locked){ border-color: var(--accent-amber); transform: translateY(-1px); }
+  .option:focus-visible{ outline: 2px solid var(--accent-amber); outline-offset: 2px; }
+
+  .option .tag{
+    flex-shrink:0;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: rgba(245,243,238,0.08);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .option.correct{ border-color: var(--accent-teal); background: rgba(79,209,197,0.12); }
+  .option.correct .tag{ background: var(--accent-teal); color: #0B2421; }
+  .option.wrong{ border-color: var(--accent-coral); background: rgba(255,107,107,0.10); }
+  .option.wrong .tag{ background: var(--accent-coral); color: #2B0B0B; }
+  .option.locked:not(.correct):not(.wrong){ opacity: 0.45; }
+
+  .explain{
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent-amber);
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    display:none;
+  }
+  .explain.show{ display:block; }
+  .explain strong{ color: var(--text-primary); }
+
+  .next-btn{
+    margin-top: 22px;
+    width:100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: var(--accent-amber);
+    color: #2B1B00;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor:pointer;
+    display:none;
+    transition: filter .2s ease;
+  }
+  .next-btn.show{ display:block; }
+  .next-btn:hover{ filter: brightness(1.08); }
+
+  /* Result screen */
+  .result{ display:none; text-align:center; }
+  .result.show{ display:block; }
+  .result .score-num{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 64px;
+    font-weight: 700;
+    margin: 6px 0 2px;
+    background: linear-gradient(135deg, var(--accent-amber), var(--accent-teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .result .score-sub{ color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+  .result .verdict{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .result .verdict-desc{
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 440px;
+    margin-left:auto; margin-right:auto;
+  }
+  .breakdown{
+    display:flex; gap:12px; margin-bottom:24px;
+  }
+  .breakdown .b-item{
+    flex:1; background: var(--surface-2); border-radius: 14px; padding: 14px;
+    border: 1px solid var(--border);
+  }
+  .breakdown .b-num{ font-family:'Space Grotesk', sans-serif; font-size:22px; font-weight:700; }
+  .breakdown .b-label{ font-size: 12px; color: var(--text-muted); margin-top:4px; }
+
+  .retry-btn{
+    padding: 14px 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor:pointer;
+    transition: border-color .2s ease;
+  }
+  .retry-btn:hover{ border-color: var(--accent-amber); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <p class="eyebrow">MKWI4203 · Kewirausahaan di Era Digital</p>
+  <h1>Modul 3 — Proses Mengenal Potensi Diri</h1>
+
+  <div class="progress-track" id="progressTrack"></div>
+  <div class="progress-label">
+    <span id="progressText">Soal 1 dari 20</span>
+    <span id="scoreText">Skor: 0</span>
+  </div>
+
+  <div class="card" id="quizCard">
+    <p class="q-meta" id="qMeta">Kegiatan Belajar 1</p>
+    <p class="q-text" id="qText"></p>
+    <div class="options" id="optionsContainer"></div>
+    <div class="explain" id="explainBox"></div>
+    <button class="next-btn" id="nextBtn">Lanjut →</button>
+  </div>
+
+  <div class="card result" id="resultCard">
+    <p class="eyebrow" style="text-align:center;">Hasil Modul 3</p>
+    <div class="score-num" id="finalScore">0/20</div>
+    <p class="score-sub" id="finalPercent">0%</p>
+    <p class="verdict" id="verdictTitle"></p>
+    <p class="verdict-desc" id="verdictDesc"></p>
+    <div class="breakdown">
+      <div class="b-item">
+        <div class="b-num" id="kb1Score">0/10</div>
+        <div class="b-label">KB1 · Identifikasi Potensi Diri</div>
+      </div>
+      <div class="b-item">
+        <div class="b-num" id="kb2Score">0/10</div>
+        <div class="b-label">KB2 · Prinsip Effectuation</div>
+      </div>
+    </div>
+    <button class="retry-btn" id="retryBtn">Ulangi Kuis Modul 3</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // ===== KB1: Identifikasi Potensi Diri dalam Memulai Suatu Usaha (1-10) =====
+  {
+    kb: 1,
+    q: "Identifikasi potensi diri dalam konteks memulai usaha paling tepat dipahami sebagai...",
+    options: [
+      "Proses meniru sepenuhnya strategi usaha orang lain",
+      "Proses mengenali kekuatan, kelemahan, sumber daya, dan kapasitas pribadi sebagai dasar untuk memulai usaha",
+      "Kegiatan yang hanya relevan setelah usaha berjalan lama",
+      "Aktivitas yang hanya dilakukan oleh konsultan bisnis profesional"
+    ],
+    correct: 1,
+    explain: "Identifikasi potensi diri adalah proses mengenali kekuatan, kelemahan, serta sumber daya pribadi yang dimiliki, sebagai dasar pertimbangan sebelum memulai dan mengarahkan suatu usaha."
+  },
+  {
+    kb: 1,
+    q: "Mengenali kekuatan dan kelemahan diri sebelum memulai usaha penting karena...",
+    options: [
+      "Akan membuat seseorang ragu dan menunda usaha selamanya",
+      "Membantu calon wirausaha memilih jenis usaha yang sesuai dengan kapasitas dan mengantisipasi area yang perlu diperkuat",
+      "Tidak memiliki kaitan dengan keberhasilan usaha",
+      "Hanya relevan bagi usaha berskala besar"
+    ],
+    correct: 1,
+    explain: "Dengan memahami kekuatan dan kelemahan diri, calon wirausaha dapat memilih arah usaha yang sesuai kapasitasnya serta menyiapkan strategi untuk memperkuat area yang masih lemah."
+  },
+  {
+    kb: 1,
+    q: "Aspek 'who I am' dalam mengenali potensi diri merujuk pada...",
+    options: [
+      "Daftar aset keuangan yang dimiliki seseorang",
+      "Nilai-nilai, sifat, dan preferensi pribadi yang membentuk identitas serta cara seseorang bertindak",
+      "Jumlah relasi bisnis yang dimiliki",
+      "Riwayat pendidikan formal semata"
+    ],
+    correct: 1,
+    explain: "'Who I am' merujuk pada nilai, sifat, dan preferensi pribadi yang membentuk identitas seseorang, sekaligus memengaruhi cara ia bertindak dan mengambil keputusan dalam berusaha."
+  },
+  {
+    kb: 1,
+    q: "Aspek 'what I know' dalam identifikasi potensi diri berkaitan dengan...",
+    options: [
+      "Jaringan relasi yang dimiliki seseorang",
+      "Pengetahuan, keahlian, dan pengalaman yang telah dikuasai seseorang",
+      "Jumlah pengikut di media sosial",
+      "Lokasi tempat tinggal seseorang"
+    ],
+    correct: 1,
+    explain: "'What I know' berkaitan dengan pengetahuan, keahlian, dan pengalaman yang telah dikuasai, yang dapat menjadi modal penting dalam menjalankan usaha."
+  },
+  {
+    kb: 1,
+    q: "Aspek 'who I know' dalam identifikasi potensi diri merujuk pada...",
+    options: [
+      "Kemampuan teknis yang dikuasai seseorang",
+      "Jaringan relasi dan hubungan sosial yang dapat dimanfaatkan untuk mendukung usaha",
+      "Nilai dan keyakinan pribadi seseorang",
+      "Tingkat pendidikan formal yang ditempuh"
+    ],
+    correct: 1,
+    explain: "'Who I know' merujuk pada jaringan relasi dan hubungan sosial yang dimiliki, yang dapat dimanfaatkan sebagai sumber daya pendukung dalam menjalankan usaha."
+  },
+  {
+    kb: 1,
+    q: "Peran minat atau passion dalam memulai usaha adalah untuk...",
+    options: [
+      "Menjamin keuntungan finansial secara otomatis tanpa usaha lain",
+      "Menjaga motivasi dan ketahanan dalam menjalani proses usaha yang penuh tantangan",
+      "Menghilangkan kebutuhan terhadap perencanaan usaha",
+      "Menggantikan kebutuhan terhadap keterampilan teknis"
+    ],
+    correct: 1,
+    explain: "Minat atau passion membantu menjaga motivasi dan ketahanan seseorang dalam menjalani proses usaha yang penuh tantangan, meski tidak menjamin keberhasilan finansial secara otomatis."
+  },
+  {
+    kb: 1,
+    q: "Analisis SWOT personal digunakan dalam proses mengenal potensi diri untuk...",
+    options: [
+      "Menilai kondisi pesaing usaha semata",
+      "Memetakan kekuatan, kelemahan, peluang, dan ancaman yang berkaitan dengan diri sendiri sebagai calon wirausaha",
+      "Mengukur jumlah modal yang dimiliki",
+      "Menentukan harga jual produk"
+    ],
+    correct: 1,
+    explain: "Analisis SWOT personal membantu memetakan kekuatan, kelemahan, peluang, dan ancaman yang relevan dengan diri seseorang sebagai calon wirausaha, sebagai dasar pengambilan keputusan usaha."
+  },
+  {
+    kb: 1,
+    q: "Pengalaman masa lalu, seperti pekerjaan sebelumnya atau hobi, dapat menjadi sumber potensi diri karena...",
+    options: [
+      "Tidak relevan sama sekali dengan dunia usaha",
+      "Dapat memberikan wawasan, keterampilan, atau ide usaha yang relevan dengan bidang yang pernah dijalani",
+      "Hanya berguna untuk usaha di sektor yang identik dengan pekerjaan sebelumnya",
+      "Selalu menjadi penghambat dalam memulai usaha baru"
+    ],
+    correct: 1,
+    explain: "Pengalaman masa lalu, baik dari pekerjaan maupun hobi, sering memberikan wawasan dan keterampilan yang dapat dimanfaatkan sebagai modal dalam merintis usaha baru."
+  },
+  {
+    kb: 1,
+    q: "Motivasi intrinsik dalam memulai usaha merujuk pada dorongan yang muncul dari...",
+    options: [
+      "Tekanan atau tuntutan dari pihak luar semata",
+      "Keinginan dan kepuasan pribadi, seperti hasrat untuk mandiri atau mewujudkan ide sendiri",
+      "Ekspektasi gaji yang ditawarkan perusahaan lain",
+      "Aturan yang ditetapkan oleh pemerintah"
+    ],
+    correct: 1,
+    explain: "Motivasi intrinsik berasal dari dalam diri sendiri, seperti keinginan untuk mandiri atau mewujudkan ide pribadi, berbeda dengan motivasi ekstrinsik yang dipengaruhi faktor dari luar."
+  },
+  {
+    kb: 1,
+    q: "Manfaat utama menyelaraskan potensi diri dengan peluang usaha yang dipilih adalah...",
+    options: [
+      "Memastikan usaha akan selalu bebas dari risiko",
+      "Meningkatkan kemungkinan keberlanjutan usaha karena sesuai dengan kapasitas, minat, dan sumber daya yang dimiliki",
+      "Menghilangkan kebutuhan terhadap perencanaan bisnis",
+      "Membuat usaha tidak memerlukan evaluasi lebih lanjut"
+    ],
+    correct: 1,
+    explain: "Usaha yang selaras dengan kapasitas, minat, dan sumber daya pribadi cenderung lebih berkelanjutan karena pelakunya lebih siap menghadapi tantangan dan konsisten menjalankannya."
+  },
+
+  // ===== KB2: Prinsip Effectuation (11-20) =====
+  {
+    kb: 2,
+    q: "Effectuation secara umum dapat dipahami sebagai...",
+    options: [
+      "Pendekatan yang selalu dimulai dari penetapan target keuntungan yang pasti",
+      "Pendekatan berwirausaha yang dimulai dari sumber daya yang tersedia untuk menentukan kemungkinan tujuan yang dapat dicapai",
+      "Metode yang hanya berlaku untuk usaha berskala sangat besar",
+      "Strategi yang menghindari segala bentuk ketidakpastian"
+    ],
+    correct: 1,
+    explain: "Effectuation adalah pendekatan berwirausaha yang dimulai dari sumber daya (means) yang tersedia, kemudian menentukan kemungkinan tujuan (goals) yang dapat dicapai dari sumber daya tersebut."
+  },
+  {
+    kb: 2,
+    q: "Perbedaan utama antara effectual reasoning dan causal reasoning adalah...",
+    options: [
+      "Causal reasoning dimulai dari sumber daya yang ada, sedangkan effectual reasoning dimulai dari tujuan tertentu",
+      "Causal reasoning dimulai dari tujuan tertentu lalu menentukan cara mencapainya, sedangkan effectual reasoning dimulai dari sumber daya yang ada untuk menentukan tujuan yang mungkin dicapai",
+      "Keduanya merupakan pendekatan yang identik tanpa perbedaan mendasar",
+      "Causal reasoning hanya digunakan dalam lingkungan yang sangat tidak pasti"
+    ],
+    correct: 1,
+    explain: "Causal reasoning bergerak dari tujuan yang sudah ditetapkan untuk mencari cara mencapainya, sedangkan effectual reasoning bergerak dari sumber daya yang tersedia untuk menentukan tujuan yang memungkinkan."
+  },
+  {
+    kb: 2,
+    q: "Prinsip 'bird in hand' dalam effectuation menekankan bahwa wirausaha sebaiknya memulai usaha dengan...",
+    options: [
+      "Menunggu modal besar terkumpul terlebih dahulu",
+      "Memanfaatkan siapa dirinya, apa yang ia ketahui, dan siapa yang ia kenal sebagai titik awal",
+      "Meniru rencana bisnis pesaing secara menyeluruh",
+      "Mengabaikan sumber daya yang sudah dimiliki saat ini"
+    ],
+    correct: 1,
+    explain: "Prinsip 'bird in hand' menekankan agar wirausaha memulai dari sumber daya yang sudah dimiliki saat ini, yaitu identitas diri, pengetahuan, dan jaringan relasi, sebagai titik awal usaha."
+  },
+  {
+    kb: 2,
+    q: "Prinsip 'affordable loss' dalam effectuation berfokus pada...",
+    options: [
+      "Memaksimalkan ekspektasi keuntungan tanpa memperhitungkan risiko",
+      "Menentukan batas kerugian yang sanggup ditanggung sebelum mengambil tindakan, bukan sekadar memprediksi keuntungan",
+      "Menghindari segala bentuk investasi sama sekali",
+      "Menjamin bahwa usaha tidak akan pernah mengalami kerugian"
+    ],
+    correct: 1,
+    explain: "Affordable loss mengarahkan wirausaha untuk menetapkan batas kerugian yang masih dapat ditanggung sebelum mengambil keputusan, alih-alih hanya berfokus pada perkiraan keuntungan yang belum pasti."
+  },
+  {
+    kb: 2,
+    q: "Prinsip 'crazy quilt' dalam effectuation menekankan pentingnya...",
+    options: [
+      "Menjalankan usaha secara sepenuhnya mandiri tanpa keterlibatan pihak lain",
+      "Membangun kemitraan dan aliansi strategis dengan berbagai pihak sebagai bagian dari pengembangan usaha",
+      "Menghindari kerja sama dengan pesaing maupun mitra potensial",
+      "Hanya bergantung pada analisis pasar yang sudah baku"
+    ],
+    correct: 1,
+    explain: "Crazy quilt menekankan pentingnya membangun kemitraan dan aliansi dengan berbagai pihak, termasuk pelanggan dan pemasok, sebagai bagian dari strategi mengembangkan usaha di tengah ketidakpastian."
+  },
+  {
+    kb: 2,
+    q: "Prinsip 'lemonade' dalam effectuation mengajarkan wirausaha untuk...",
+    options: [
+      "Menghindari segala bentuk kejutan atau hal tak terduga dalam usaha",
+      "Memanfaatkan kejutan atau ketidakpastian yang muncul sebagai peluang baru, bukan hanya sebagai hambatan",
+      "Mengabaikan situasi yang tidak sesuai rencana awal",
+      "Selalu mengikuti rencana awal tanpa fleksibilitas"
+    ],
+    correct: 1,
+    explain: "Prinsip lemonade mengajarkan wirausaha untuk memanfaatkan kejutan atau hal-hal tak terduga sebagai peluang baru, sejalan dengan ungkapan memanfaatkan keadaan yang kurang ideal menjadi sesuatu yang bermanfaat."
+  },
+  {
+    kb: 2,
+    q: "Prinsip 'pilot in the plane' dalam effectuation menekankan bahwa wirausaha sebaiknya...",
+    options: [
+      "Berfokus memprediksi masa depan secara presisi sebelum bertindak",
+      "Berfokus mengendalikan faktor-faktor yang berada dalam kendalinya, alih-alih hanya berusaha memprediksi masa depan yang penuh ketidakpastian",
+      "Menyerahkan seluruh arah usaha pada faktor eksternal di luar kendalinya",
+      "Menghindari pengambilan keputusan apa pun hingga situasi sepenuhnya pasti"
+    ],
+    correct: 1,
+    explain: "Pilot in the plane menekankan agar wirausaha berfokus mengendalikan apa yang bisa dikendalikan untuk membentuk masa depan usahanya, bukan menghabiskan upaya hanya untuk memprediksi sesuatu yang sulit dipastikan."
+  },
+  {
+    kb: 2,
+    q: "Pendekatan effectuation paling relevan diterapkan dalam situasi usaha yang...",
+    options: [
+      "Sepenuhnya stabil dan dapat diprediksi dengan akurat",
+      "Diliputi ketidakpastian tinggi sehingga sulit menyusun rencana yang sepenuhnya pasti di awal",
+      "Tidak memerlukan pengambilan keputusan sama sekali",
+      "Hanya berlaku pada usaha yang telah berjalan lebih dari sepuluh tahun"
+    ],
+    correct: 1,
+    explain: "Effectuation paling relevan digunakan dalam kondisi yang penuh ketidakpastian, di mana perencanaan yang sepenuhnya pasti sulit disusun sejak awal, sehingga pendekatan berbasis sumber daya menjadi lebih realistis."
+  },
+  {
+    kb: 2,
+    q: "Salah satu manfaat penerapan prinsip effectuation bagi wirausaha pemula adalah...",
+    options: [
+      "Mewajibkan tersedianya modal besar sebelum memulai usaha",
+      "Memungkinkan usaha dimulai dengan sumber daya terbatas yang sudah dimiliki, tanpa harus menunggu kondisi ideal",
+      "Menghilangkan kebutuhan terhadap kreativitas dalam menjalankan usaha",
+      "Menjamin keberhasilan usaha tanpa kemungkinan kegagalan"
+    ],
+    correct: 1,
+    explain: "Effectuation memungkinkan wirausaha pemula memulai usahanya dengan sumber daya terbatas yang sudah dimiliki saat ini, tanpa harus menunggu kondisi yang dianggap ideal atau sumber daya yang sangat besar."
+  },
+  {
+    kb: 2,
+    q: "Secara keseluruhan, prinsip effectuation dapat disimpulkan sebagai pendekatan yang...",
+    options: [
+      "Mengutamakan prediksi masa depan yang presisi sebagai dasar utama pengambilan keputusan",
+      "Praktis dalam mengelola ketidakpastian dengan memanfaatkan sumber daya yang ada, mengelola risiko secara terukur, serta membangun kemitraan",
+      "Hanya cocok diterapkan oleh perusahaan besar dengan modal tak terbatas",
+      "Mengabaikan peran jaringan dan kemitraan dalam pengembangan usaha"
+    ],
+    correct: 1,
+    explain: "Effectuation merupakan pendekatan praktis untuk mengelola ketidakpastian, yaitu dengan memanfaatkan sumber daya yang tersedia, menetapkan batas kerugian yang terukur, serta membangun kemitraan strategis."
+  }
+];
+
+let current = 0;
+let score = 0;
+let locked = false;
+const answers = new Array(questions.length).fill(null); // 'correct' | 'wrong'
+
+const progressTrack = document.getElementById('progressTrack');
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const qMeta = document.getElementById('qMeta');
+const qText = document.getElementById('qText');
+const optionsContainer = document.getElementById('optionsContainer');
+const explainBox = document.getElementById('explainBox');
+const nextBtn = document.getElementById('nextBtn');
+const quizCard = document.getElementById('quizCard');
+const resultCard = document.getElementById('resultCard');
+
+function buildProgress(){
+  progressTrack.innerHTML = '';
+  questions.forEach((_, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'progress-bar';
+    const h = 30 + (i / (questions.length - 1)) * 70;
+    bar.style.height = h + '%';
+    progressTrack.appendChild(bar);
+  });
+}
+
+function refreshProgress(){
+  const bars = progressTrack.children;
+  for(let i=0;i<bars.length;i++){
+    bars[i].classList.remove('current','correct','wrong');
+    if(answers[i] === 'correct') bars[i].classList.add('correct');
+    else if(answers[i] === 'wrong') bars[i].classList.add('wrong');
+    else if(i === current) bars[i].classList.add('current');
+  }
+  progressText.textContent = `Soal ${current+1} dari ${questions.length}`;
+  scoreText.textContent = `Skor: ${score}`;
+}
+
+function renderQuestion(){
+  locked = false;
+  const item = questions[current];
+  qMeta.textContent = `Kegiatan Belajar ${item.kb}`;
+  qText.textContent = item.q;
+  optionsContainer.innerHTML = '';
+  explainBox.classList.remove('show');
+  explainBox.innerHTML = '';
+  nextBtn.classList.remove('show');
+  nextBtn.textContent = current === questions.length - 1 ? 'Lihat Hasil →' : 'Lanjut →';
+
+  item.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="tag">${String.fromCharCode(65+idx)}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => selectOption(idx, btn));
+    optionsContainer.appendChild(btn);
+  });
+
+  refreshProgress();
+}
+
+function selectOption(idx, btnEl){
+  if(locked) return;
+  locked = true;
+  const item = questions[current];
+  const allBtns = optionsContainer.querySelectorAll('.option');
+  allBtns.forEach(b => b.classList.add('locked'));
+
+  if(idx === item.correct){
+    btnEl.classList.add('correct');
+    answers[current] = 'correct';
+    score++;
+  } else {
+    btnEl.classList.add('wrong');
+    allBtns[item.correct].classList.add('correct');
+    answers[current] = 'wrong';
+  }
+
+  explainBox.innerHTML = `<strong>${idx === item.correct ? 'Benar.' : 'Kurang tepat.'}</strong> ${item.explain}`;
+  explainBox.classList.add('show');
+  nextBtn.classList.add('show');
+  refreshProgress();
+}
+
+nextBtn.addEventListener('click', () => {
+  if(current < questions.length - 1){
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  quizCard.style.display = 'none';
+  resultCard.classList.add('show');
+
+  document.getElementById('finalScore').textContent = `${score}/${questions.length}`;
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('finalPercent').textContent = `${pct}% jawaban benar`;
+
+  let kb1 = 0, kb2 = 0;
+  questions.forEach((q, i) => {
+    if(answers[i] === 'correct'){
+      if(q.kb === 1) kb1++; else kb2++;
+    }
+  });
+  document.getElementById('kb1Score').textContent = `${kb1}/10`;
+  document.getElementById('kb2Score').textContent = `${kb2}/10`;
+
+  let title, desc;
+  if(score >= 18){
+    title = 'Wirausaha Visioner';
+    desc = 'Pemahaman Anda terhadap identifikasi potensi diri dan prinsip effectuation sudah sangat solid. Siap lanjut ke Modul 4!';
+  } else if(score >= 14){
+    title = 'Inovator Potensial';
+    desc = 'Pemahaman dasar sudah baik. Coba tinjau ulang soal yang terlewat sebelum melanjutkan ke modul berikutnya.';
+  } else if(score >= 10){
+    title = 'Perlu Penajaman Strategi';
+    desc = 'Beberapa konsep kunci masih perlu diperkuat. Pertimbangkan untuk membaca ulang Kegiatan Belajar yang skornya lebih rendah.';
+  } else {
+    title = 'Mulai dari Dasar';
+    desc = 'Disarankan membaca ulang Modul 3 secara menyeluruh sebelum mencoba kuis ini lagi.';
+  }
+  document.getElementById('verdictTitle').textContent = title;
+  document.getElementById('verdictDesc').textContent = desc;
+}
+
+document.getElementById('retryBtn').addEventListener('click', () => {
+  current = 0; score = 0; answers.fill(null);
+  resultCard.classList.remove('show');
+  quizCard.style.display = 'block';
+  renderQuestion();
+});
+
+buildProgress();
+renderQuestion();
+</script>
+</body>
+</html>

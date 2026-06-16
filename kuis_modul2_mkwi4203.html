@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Modul 2 — Kewirausahaan di Era Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14172B;
+    --surface: #1C2046;
+    --surface-2: #262B56;
+    --accent-amber: #F2A93B;
+    --accent-teal: #4FD1C5;
+    --accent-coral: #FF6B6B;
+    --text-primary: #F5F3EE;
+    --text-muted: #9CA3C4;
+    --border: rgba(245,243,238,0.10);
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: radial-gradient(circle at 20% -10%, #232958 0%, var(--bg) 55%);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding: 32px 16px 64px;
+  }
+
+  .app{ width:100%; max-width: 640px; }
+
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-amber);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+
+  h1{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 5vw, 28px);
+    font-weight: 700;
+    margin: 0 0 18px;
+    line-height: 1.25;
+  }
+
+  .progress-track{
+    display:flex;
+    align-items:flex-end;
+    gap: 3px;
+    height: 36px;
+    margin-bottom: 8px;
+  }
+  .progress-bar{
+    flex:1;
+    background: var(--border);
+    border-radius: 3px 3px 0 0;
+    transition: background .35s ease, transform .35s ease;
+    transform-origin: bottom;
+  }
+  .progress-bar.current{ background: var(--accent-amber); }
+  .progress-bar.correct{ background: var(--accent-teal); }
+  .progress-bar.wrong{ background: var(--accent-coral); }
+
+  .progress-label{
+    display:flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+  .progress-label span:last-child{ font-weight:600; color: var(--text-primary); }
+
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+  }
+
+  .q-meta{
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .q-text{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 22px;
+  }
+
+  .options{ display:flex; flex-direction:column; gap: 10px; }
+
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap: 12px;
+    text-align:left;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, transform .15s ease;
+  }
+  .option:hover:not(.locked){ border-color: var(--accent-amber); transform: translateY(-1px); }
+  .option:focus-visible{ outline: 2px solid var(--accent-amber); outline-offset: 2px; }
+
+  .option .tag{
+    flex-shrink:0;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: rgba(245,243,238,0.08);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .option.correct{ border-color: var(--accent-teal); background: rgba(79,209,197,0.12); }
+  .option.correct .tag{ background: var(--accent-teal); color: #0B2421; }
+  .option.wrong{ border-color: var(--accent-coral); background: rgba(255,107,107,0.10); }
+  .option.wrong .tag{ background: var(--accent-coral); color: #2B0B0B; }
+  .option.locked:not(.correct):not(.wrong){ opacity: 0.45; }
+
+  .explain{
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--surface-2);
+    border-left: 3px solid var(--accent-amber);
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    display:none;
+  }
+  .explain.show{ display:block; }
+  .explain strong{ color: var(--text-primary); }
+
+  .next-btn{
+    margin-top: 22px;
+    width:100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: var(--accent-amber);
+    color: #2B1B00;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor:pointer;
+    display:none;
+    transition: filter .2s ease;
+  }
+  .next-btn.show{ display:block; }
+  .next-btn:hover{ filter: brightness(1.08); }
+
+  /* Result screen */
+  .result{ display:none; text-align:center; }
+  .result.show{ display:block; }
+  .result .score-num{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 64px;
+    font-weight: 700;
+    margin: 6px 0 2px;
+    background: linear-gradient(135deg, var(--accent-amber), var(--accent-teal));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .result .score-sub{ color: var(--text-muted); font-size: 14px; margin-bottom: 18px; }
+  .result .verdict{
+    font-family:'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .result .verdict-desc{
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 440px;
+    margin-left:auto; margin-right:auto;
+  }
+  .breakdown{
+    display:flex; gap:12px; margin-bottom:24px;
+  }
+  .breakdown .b-item{
+    flex:1; background: var(--surface-2); border-radius: 14px; padding: 14px;
+    border: 1px solid var(--border);
+  }
+  .breakdown .b-num{ font-family:'Space Grotesk', sans-serif; font-size:22px; font-weight:700; }
+  .breakdown .b-label{ font-size: 12px; color: var(--text-muted); margin-top:4px; }
+
+  .retry-btn{
+    padding: 14px 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor:pointer;
+    transition: border-color .2s ease;
+  }
+  .retry-btn:hover{ border-color: var(--accent-amber); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <p class="eyebrow">MKWI4203 · Kewirausahaan di Era Digital</p>
+  <h1>Modul 2 — Memahami Peran dan Karakteristik Kunci Wirausaha</h1>
+
+  <div class="progress-track" id="progressTrack"></div>
+  <div class="progress-label">
+    <span id="progressText">Soal 1 dari 20</span>
+    <span id="scoreText">Skor: 0</span>
+  </div>
+
+  <div class="card" id="quizCard">
+    <p class="q-meta" id="qMeta">Kegiatan Belajar 1</p>
+    <p class="q-text" id="qText"></p>
+    <div class="options" id="optionsContainer"></div>
+    <div class="explain" id="explainBox"></div>
+    <button class="next-btn" id="nextBtn">Lanjut →</button>
+  </div>
+
+  <div class="card result" id="resultCard">
+    <p class="eyebrow" style="text-align:center;">Hasil Modul 2</p>
+    <div class="score-num" id="finalScore">0/20</div>
+    <p class="score-sub" id="finalPercent">0%</p>
+    <p class="verdict" id="verdictTitle"></p>
+    <p class="verdict-desc" id="verdictDesc"></p>
+    <div class="breakdown">
+      <div class="b-item">
+        <div class="b-num" id="kb1Score">0/10</div>
+        <div class="b-label">KB1 · Definisi & Bentuk Wirausaha</div>
+      </div>
+      <div class="b-item">
+        <div class="b-num" id="kb2Score">0/10</div>
+        <div class="b-label">KB2 · Karakteristik Kunci Wirausaha</div>
+      </div>
+    </div>
+    <button class="retry-btn" id="retryBtn">Ulangi Kuis Modul 2</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // ===== KB1: Definisi dan Bentuk-Bentuk Wirausaha (1-10) =====
+  {
+    kb: 1,
+    q: "Istilah 'wirausaha' (entrepreneur) merujuk pada...",
+    options: [
+      "Konsep atau proses penciptaan usaha secara umum",
+      "Individu yang mengenali peluang, mengorganisasi sumber daya, dan menjalankan usaha untuk menciptakan nilai",
+      "Lembaga pemerintah yang mengatur izin usaha",
+      "Sekelompok investor yang hanya menanamkan modal tanpa terlibat operasional"
+    ],
+    correct: 1,
+    explain: "Entrepreneur adalah pelaku atau individu yang mengenali peluang, mengorganisasi sumber daya, dan menjalankan usaha, berbeda dengan entrepreneurship yang merujuk pada proses atau konsepnya."
+  },
+  {
+    kb: 1,
+    q: "Perbedaan mendasar antara 'entrepreneur' dan 'entrepreneurship' adalah...",
+    options: [
+      "Keduanya memiliki makna yang identik tanpa perbedaan",
+      "Entrepreneur merujuk pada pelaku/individu, sedangkan entrepreneurship merujuk pada proses, konsep, atau aktivitas kewirausahaan itu sendiri",
+      "Entrepreneurship hanya berlaku untuk usaha besar",
+      "Entrepreneur hanya istilah hukum, sedangkan entrepreneurship istilah ekonomi"
+    ],
+    correct: 1,
+    explain: "Entrepreneur adalah pelakunya (orangnya), sementara entrepreneurship adalah proses, konsep, dan rangkaian aktivitas kewirausahaan yang dijalankan."
+  },
+  {
+    kb: 1,
+    q: "Wirausaha yang menjalankan usahanya secara mandiri, mengambil keputusan sendiri, dan menanggung risiko sepenuhnya disebut...",
+    options: [
+      "Intrapreneur",
+      "Solo/individual entrepreneur",
+      "Wirausaha sosial",
+      "Wirausaha waralaba"
+    ],
+    correct: 1,
+    explain: "Solo atau individual entrepreneur adalah bentuk wirausaha yang dijalankan secara mandiri oleh satu individu, dengan kendali penuh atas keputusan dan risiko usahanya."
+  },
+  {
+    kb: 1,
+    q: "Seorang karyawan yang bertindak inovatif dan proaktif menciptakan unit bisnis baru di dalam perusahaan tempatnya bekerja disebut sebagai...",
+    options: [
+      "Intrapreneur",
+      "Necessity entrepreneur",
+      "Wirausaha waralaba",
+      "Wirausaha sosial"
+    ],
+    correct: 0,
+    explain: "Intrapreneur adalah individu yang menjalankan jiwa dan praktik kewirausahaan di dalam organisasi atau korporasi tempatnya bekerja, bukan dengan mendirikan usaha sendiri secara independen."
+  },
+  {
+    kb: 1,
+    q: "Wirausaha yang tujuan utamanya menciptakan dampak sosial atau lingkungan, dengan keuntungan finansial sebagai pendukung tujuan tersebut, disebut...",
+    options: [
+      "Wirausaha sosial (social entrepreneur)",
+      "Wirausaha waralaba",
+      "Intrapreneur",
+      "Wirausaha berbasis kebutuhan"
+    ],
+    correct: 0,
+    explain: "Wirausaha sosial menjalankan usaha dengan misi utama menciptakan dampak sosial atau lingkungan, di mana keuntungan finansial berfungsi mendukung keberlanjutan misi tersebut."
+  },
+  {
+    kb: 1,
+    q: "Bentuk usaha di mana pelaku menjalankan bisnis dengan memakai merek, sistem, dan dukungan operasional dari pihak pemilik merek disebut...",
+    options: [
+      "Wirausaha waralaba (franchise)",
+      "Wirausaha sosial",
+      "Intrapreneur",
+      "Wirausaha berbasis peluang"
+    ],
+    correct: 0,
+    explain: "Wirausaha waralaba menjalankan usaha dengan menggunakan merek, sistem operasional, dan dukungan dari pemilik merek (franchisor) sesuai perjanjian kerja sama."
+  },
+  {
+    kb: 1,
+    q: "Wirausaha yang menjalankan seluruh atau sebagian besar aktivitas usahanya melalui platform daring disebut...",
+    options: [
+      "Wirausaha digital/online entrepreneur",
+      "Wirausaha waralaba konvensional",
+      "Wirausaha sosial",
+      "Intrapreneur korporasi"
+    ],
+    correct: 0,
+    explain: "Wirausaha digital atau online entrepreneur menjalankan sebagian besar atau seluruh aktivitas usahanya, mulai dari pemasaran hingga transaksi, melalui platform daring."
+  },
+  {
+    kb: 1,
+    q: "Klasifikasi usaha mikro, kecil, dan menengah (UMKM) pada umumnya dibedakan berdasarkan...",
+    options: [
+      "Warna logo usaha",
+      "Skala omzet, aset, dan jumlah tenaga kerja yang dimiliki",
+      "Lokasi geografis usaha semata",
+      "Jenis kelamin pemilik usaha"
+    ],
+    correct: 1,
+    explain: "Klasifikasi usaha mikro, kecil, dan menengah umumnya didasarkan pada kriteria skala omzet, nilai aset, dan jumlah tenaga kerja yang dimiliki."
+  },
+  {
+    kb: 1,
+    q: "Wirausaha yang memulai usaha karena terdesak kebutuhan ekonomi dan terbatasnya pilihan pekerjaan disebut sebagai...",
+    options: [
+      "Opportunity-based entrepreneur",
+      "Necessity-based entrepreneur",
+      "Wirausaha waralaba",
+      "Intrapreneur"
+    ],
+    correct: 1,
+    explain: "Necessity-based entrepreneur memulai usaha karena dorongan kebutuhan ekonomi, berbeda dengan opportunity-based entrepreneur yang memulai usaha karena melihat peluang strategis."
+  },
+  {
+    kb: 1,
+    q: "Berikut adalah contoh pengelompokan wirausaha berdasarkan sektor usahanya, kecuali...",
+    options: [
+      "Wirausaha di sektor ekonomi kreatif",
+      "Wirausaha di sektor teknologi",
+      "Wirausaha di sektor jasa",
+      "Wirausaha berdasarkan golongan usia pemilik"
+    ],
+    correct: 3,
+    explain: "Pengelompokan berdasarkan sektor usaha mengacu pada bidang aktivitas seperti ekonomi kreatif, teknologi, atau jasa, bukan berdasarkan atribut pribadi pemilik seperti usia."
+  },
+
+  // ===== KB2: Karakteristik Kunci Wirausaha (11-20) =====
+  {
+    kb: 2,
+    q: "Karakteristik 'achievement orientation' pada wirausaha menggambarkan...",
+    options: [
+      "Kecenderungan menghindari pencapaian target apa pun",
+      "Dorongan kuat untuk mencapai standar prestasi tertentu dan terus meningkatkan kinerja usaha",
+      "Sikap puas dengan hasil seadanya tanpa target",
+      "Ketergantungan penuh pada keberuntungan semata"
+    ],
+    correct: 1,
+    explain: "Achievement orientation mencerminkan dorongan kuat wirausaha untuk mencapai standar prestasi tertentu dan terus berupaya meningkatkan kinerja usahanya."
+  },
+  {
+    kb: 2,
+    q: "Pengambilan risiko pada wirausaha yang sehat sebaiknya bersifat...",
+    options: [
+      "Nekat tanpa pertimbangan apa pun",
+      "Terukur, didasarkan pada analisis dan perhitungan yang matang",
+      "Selalu menghindari risiko sama sekali",
+      "Mengikuti keputusan orang lain tanpa evaluasi"
+    ],
+    correct: 1,
+    explain: "Wirausaha yang sehat mengambil risiko secara terukur, yaitu setelah melalui analisis dan perhitungan yang matang, bukan sekadar nekat atau justru menghindarinya sama sekali."
+  },
+  {
+    kb: 2,
+    q: "Kreativitas dan inovasi sebagai karakteristik kunci wirausaha berfungsi untuk...",
+    options: [
+      "Menjaga usaha tetap identik dengan kondisi awal tanpa perubahan",
+      "Menemukan solusi baru serta membedakan usaha dari pesaing di pasar",
+      "Menghindari segala bentuk perubahan pada produk",
+      "Mengurangi kebutuhan terhadap pemahaman pasar"
+    ],
+    correct: 1,
+    explain: "Kreativitas dan inovasi membantu wirausaha menemukan solusi baru sekaligus menciptakan diferensiasi yang membedakan usahanya dari para pesaing."
+  },
+  {
+    kb: 2,
+    q: "Wirausaha dengan locus of control internal yang kuat cenderung percaya bahwa...",
+    options: [
+      "Keberhasilan atau kegagalan usahanya sepenuhnya ditentukan oleh faktor di luar kendalinya",
+      "Hasil usahanya banyak dipengaruhi oleh keputusan dan upayanya sendiri",
+      "Usaha tidak memerlukan usaha atau keputusan pribadi",
+      "Keberuntungan adalah satu-satunya faktor penentu kesuksesan"
+    ],
+    correct: 1,
+    explain: "Locus of control internal yang kuat membuat wirausaha percaya bahwa keputusan dan upayanya sendiri memiliki pengaruh besar terhadap hasil yang dicapai, bukan semata faktor eksternal."
+  },
+  {
+    kb: 2,
+    q: "Ketekunan (persistence) dan resiliensi penting bagi wirausaha terutama karena...",
+    options: [
+      "Usaha selalu berjalan lancar tanpa hambatan",
+      "Perjalanan usaha sering menghadapi kegagalan dan tantangan yang memerlukan daya tahan untuk bangkit kembali",
+      "Kegagalan berarti usaha harus dihentikan selamanya",
+      "Ketekunan hanya relevan pada tahap awal usaha"
+    ],
+    correct: 1,
+    explain: "Perjalanan kewirausahaan kerap menghadapi kegagalan dan tantangan, sehingga ketekunan dan resiliensi diperlukan agar wirausaha mampu bangkit dan terus melanjutkan usahanya."
+  },
+  {
+    kb: 2,
+    q: "Sikap proaktif pada wirausaha tercermin dari...",
+    options: [
+      "Menunggu instruksi sebelum mengambil tindakan apa pun",
+      "Mengambil inisiatif untuk bertindak lebih dahulu dalam menangkap peluang atau mengatasi masalah",
+      "Selalu bergantung pada keputusan pihak lain",
+      "Menghindari segala bentuk pengambilan inisiatif"
+    ],
+    correct: 1,
+    explain: "Sikap proaktif tercermin dari kesediaan mengambil inisiatif dan bertindak lebih dahulu, baik dalam menangkap peluang maupun menyelesaikan masalah, tanpa menunggu arahan pihak lain."
+  },
+  {
+    kb: 2,
+    q: "Kemampuan membangun jaringan (networking) penting bagi wirausaha karena dapat...",
+    options: [
+      "Mengurangi akses terhadap informasi dan sumber daya",
+      "Membuka akses pada informasi, sumber daya, mitra, serta peluang kolaborasi baru",
+      "Membuat usaha menjadi lebih tertutup dari lingkungan luar",
+      "Tidak memberikan manfaat apa pun bagi pertumbuhan usaha"
+    ],
+    correct: 1,
+    explain: "Jaringan yang luas membuka akses pada informasi, sumber daya, mitra strategis, serta berbagai peluang kolaborasi yang mendukung pertumbuhan usaha."
+  },
+  {
+    kb: 2,
+    q: "Kemampuan mengenali peluang (opportunity recognition) merujuk pada...",
+    options: [
+      "Kemampuan menghafal seluruh data pasar tanpa analisis",
+      "Kepekaan dalam mengidentifikasi kebutuhan pasar yang belum terpenuhi dan potensi solusinya",
+      "Kemampuan menghindari segala bentuk perubahan pasar",
+      "Ketergantungan penuh pada riset pihak lain tanpa observasi mandiri"
+    ],
+    correct: 1,
+    explain: "Opportunity recognition adalah kepekaan dalam mengidentifikasi kebutuhan pasar yang belum terpenuhi sekaligus melihat potensi solusi yang dapat dikembangkan menjadi usaha."
+  },
+  {
+    kb: 2,
+    q: "Karakteristik kepemimpinan pada wirausaha berperan penting terutama dalam hal...",
+    options: [
+      "Mengambil seluruh keputusan tanpa melibatkan tim sama sekali",
+      "Mengarahkan tim, mengambil keputusan strategis, dan menjaga motivasi dalam menjalankan usaha",
+      "Menghindari tanggung jawab atas hasil keputusan usaha",
+      "Hanya relevan ketika usaha sudah berskala besar"
+    ],
+    correct: 1,
+    explain: "Kepemimpinan wirausaha berperan dalam mengarahkan tim, mengambil keputusan strategis, dan menjaga motivasi, yang penting sejak usaha masih berskala kecil sekalipun."
+  },
+  {
+    kb: 2,
+    q: "Secara keseluruhan, karakteristik kunci wirausaha yang sukses dapat disimpulkan sebagai gabungan dari...",
+    options: [
+      "Modal besar semata tanpa memerlukan kompetensi personal",
+      "Orientasi pencapaian, keberanian mengambil risiko terukur, kreativitas, ketekunan, dan kemampuan membangun jaringan",
+      "Keberuntungan semata tanpa peran karakter individu",
+      "Menghindari seluruh interaksi dengan pihak eksternal"
+    ],
+    correct: 1,
+    explain: "Kesuksesan wirausaha umumnya merupakan hasil gabungan dari orientasi pencapaian, keberanian mengambil risiko terukur, kreativitas, ketekunan, dan kemampuan membangun jaringan, bukan sekadar modal atau keberuntungan."
+  }
+];
+
+let current = 0;
+let score = 0;
+let locked = false;
+const answers = new Array(questions.length).fill(null); // 'correct' | 'wrong'
+
+const progressTrack = document.getElementById('progressTrack');
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const qMeta = document.getElementById('qMeta');
+const qText = document.getElementById('qText');
+const optionsContainer = document.getElementById('optionsContainer');
+const explainBox = document.getElementById('explainBox');
+const nextBtn = document.getElementById('nextBtn');
+const quizCard = document.getElementById('quizCard');
+const resultCard = document.getElementById('resultCard');
+
+function buildProgress(){
+  progressTrack.innerHTML = '';
+  questions.forEach((_, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'progress-bar';
+    const h = 30 + (i / (questions.length - 1)) * 70;
+    bar.style.height = h + '%';
+    progressTrack.appendChild(bar);
+  });
+}
+
+function refreshProgress(){
+  const bars = progressTrack.children;
+  for(let i=0;i<bars.length;i++){
+    bars[i].classList.remove('current','correct','wrong');
+    if(answers[i] === 'correct') bars[i].classList.add('correct');
+    else if(answers[i] === 'wrong') bars[i].classList.add('wrong');
+    else if(i === current) bars[i].classList.add('current');
+  }
+  progressText.textContent = `Soal ${current+1} dari ${questions.length}`;
+  scoreText.textContent = `Skor: ${score}`;
+}
+
+function renderQuestion(){
+  locked = false;
+  const item = questions[current];
+  qMeta.textContent = `Kegiatan Belajar ${item.kb}`;
+  qText.textContent = item.q;
+  optionsContainer.innerHTML = '';
+  explainBox.classList.remove('show');
+  explainBox.innerHTML = '';
+  nextBtn.classList.remove('show');
+  nextBtn.textContent = current === questions.length - 1 ? 'Lihat Hasil →' : 'Lanjut →';
+
+  item.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="tag">${String.fromCharCode(65+idx)}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => selectOption(idx, btn));
+    optionsContainer.appendChild(btn);
+  });
+
+  refreshProgress();
+}
+
+function selectOption(idx, btnEl){
+  if(locked) return;
+  locked = true;
+  const item = questions[current];
+  const allBtns = optionsContainer.querySelectorAll('.option');
+  allBtns.forEach(b => b.classList.add('locked'));
+
+  if(idx === item.correct){
+    btnEl.classList.add('correct');
+    answers[current] = 'correct';
+    score++;
+  } else {
+    btnEl.classList.add('wrong');
+    allBtns[item.correct].classList.add('correct');
+    answers[current] = 'wrong';
+  }
+
+  explainBox.innerHTML = `<strong>${idx === item.correct ? 'Benar.' : 'Kurang tepat.'}</strong> ${item.explain}`;
+  explainBox.classList.add('show');
+  nextBtn.classList.add('show');
+  refreshProgress();
+}
+
+nextBtn.addEventListener('click', () => {
+  if(current < questions.length - 1){
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult(){
+  quizCard.style.display = 'none';
+  resultCard.classList.add('show');
+
+  document.getElementById('finalScore').textContent = `${score}/${questions.length}`;
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('finalPercent').textContent = `${pct}% jawaban benar`;
+
+  let kb1 = 0, kb2 = 0;
+  questions.forEach((q, i) => {
+    if(answers[i] === 'correct'){
+      if(q.kb === 1) kb1++; else kb2++;
+    }
+  });
+  document.getElementById('kb1Score').textContent = `${kb1}/10`;
+  document.getElementById('kb2Score').textContent = `${kb2}/10`;
+
+  let title, desc;
+  if(score >= 18){
+    title = 'Wirausaha Visioner';
+    desc = 'Pemahaman Anda terhadap bentuk dan karakteristik kunci wirausaha sudah sangat solid. Siap lanjut ke Modul 3!';
+  } else if(score >= 14){
+    title = 'Inovator Potensial';
+    desc = 'Pemahaman dasar sudah baik. Coba tinjau ulang soal yang terlewat sebelum melanjutkan ke modul berikutnya.';
+  } else if(score >= 10){
+    title = 'Perlu Penajaman Strategi';
+    desc = 'Beberapa konsep kunci masih perlu diperkuat. Pertimbangkan untuk membaca ulang Kegiatan Belajar yang skornya lebih rendah.';
+  } else {
+    title = 'Mulai dari Dasar';
+    desc = 'Disarankan membaca ulang Modul 2 secara menyeluruh sebelum mencoba kuis ini lagi.';
+  }
+  document.getElementById('verdictTitle').textContent = title;
+  document.getElementById('verdictDesc').textContent = desc;
+}
+
+document.getElementById('retryBtn').addEventListener('click', () => {
+  current = 0; score = 0; answers.fill(null);
+  resultCard.classList.remove('show');
+  quizCard.style.display = 'block';
+  renderQuestion();
+});
+
+buildProgress();
+renderQuestion();
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Kuis - Kewirausahaan di Era Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14172B;
+    --surface: #1C2046;
+    --surface-2: #262B56;
+    --accent-amber: #F2A93B;
+    --accent-teal: #4FD1C5;
+    --text-primary: #F5F3EE;
+    --text-muted: #9CA3C4;
+    --border: rgba(245,243,238,0.10);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: radial-gradient(circle at 50% -20%, #232958 0%, var(--bg) 65%);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 800px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent-amber);
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(28px, 6vw, 42px);
+    font-weight: 700;
+    margin: 0 0 16px;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .module-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .module-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-teal);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+  }
+
+  .mod-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(79, 209, 197, 0.15);
+    color: var(--accent-teal);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .mod-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0 0 12px;
+  }
+
+  .mod-desc {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 24px;
+    flex-grow: 1;
+  }
+
+  .start-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--accent-amber);
+    transition: color .2s ease;
+  }
+
+  .module-card:hover .start-btn {
+    color: var(--accent-teal);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <p class="eyebrow">Portal Evaluasi Pembelajaran</p>
+    <h1>MKWI4203</h1>
+    <p class="subtitle">Kumpulan latihan soal pilihan ganda untuk menguji pemahaman Anda pada mata kuliah Kewirausahaan di Era Digital.</p>
+  </div>
+
+  <div class="grid">
+    <a href="kuis_modul1_mkwi4203.html" class="module-card">
+      <div class="mod-num">1</div>
+      <h2 class="mod-title">Perkembangan Dunia Usaha di Era Digital</h2>
+      <p class="mod-desc">Uji pemahaman tentang konsep dasar ekonomi digital, inovasi disruptif, dan peran teknologi.</p>
+      <div class="start-btn">Mulai Kuis →</div>
+    </a>
+
+    <a href="kuis_modul2_mkwi4203.html" class="module-card">
+      <div class="mod-num">2</div>
+      <h2 class="mod-title">Peran & Karakteristik Kunci Wirausaha</h2>
+      <p class="mod-desc">Evaluasi pengetahuan tentang bentuk-bentuk wirausaha (sosial, waralaba, startup) dan karakter intinya.</p>
+      <div class="start-btn">Mulai Kuis →</div>
+    </a>
+
+    <a href="kuis_modul3_mkwi4203.html" class="module-card">
+      <div class="mod-num">3</div>
+      <h2 class="mod-title">Proses Mengenal Potensi Diri</h2>
+      <p class="mod-desc">Latihan soal seputar analisis SWOT personal, motivasi, dan prinsip-prinsip dasar Effectuation.</p>
+      <div class="start-btn">Mulai Kuis →</div>
+    </a>
+
+    <a href="kuis_modul4_mkwi4203.html" class="module-card">
+      <div class="mod-num">4</div>
+      <h2 class="mod-title">Identifikasi Peluang Usaha</h2>
+      <p class="mod-desc">Uji konsep riset pasar, Lean Startup, MVP, dan tahapan pemecahan masalah melalui Design Thinking.</p>
+      <div class="start-btn">Mulai Kuis →</div>
+    </a>
+  </div>
+</div>
+
+</body>
+</html>
